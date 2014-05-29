@@ -40,6 +40,16 @@ public class TabletInstallOperatingSystem {
 
     public static void main(String[] args) {
         
+    	System.out.println("*************************************************\n" +
+    			"Welcome to the Image Installer for Android Images\n" +
+    			"This installer will assist you in getting prebuilt images on your tablets\n" +
+    			"You will need to have the following items to proceed:\n" +
+    			"\t-UserName and Password (supplied to you by the project leader)\n" +
+    			"\t-A stable internet connection\n" +
+    			"\t-Pre-imaged SD cards inserted into the tablets\n" +
+    			"\t-Make sure that tablets are charged 30% or more\n" +
+    			"*************************************************");
+    	
         //Check credentials before doing any processing
         ServerConnect server = new ServerConnect();
         while(true)
@@ -115,7 +125,7 @@ public class TabletInstallOperatingSystem {
         List<String> devices = new LinkedList<>();
         try 
             { 
-            Process p=Runtime.getRuntime().exec("cmd /c adb devices"); 
+            Process p=Runtime.getRuntime().exec("adb devices"); 
             p.waitFor(); 
             BufferedReader reader=new BufferedReader(
                 new InputStreamReader(p.getInputStream())
@@ -161,7 +171,7 @@ public class TabletInstallOperatingSystem {
             String deviceSerialId = devices.get(i).split("\t")[0];
 
             String cmd, adb, root, push, reboot, line, serverStop, serverStart;
-            cmd = "cmd /c ";
+            cmd = "";
             adb = " adb -s ";
             serverStop = cmd + adb + " adb kill-server ";
             serverStart = cmd + adb + " adb start-server";
