@@ -32,7 +32,9 @@ import java.util.Map;
 public class ServerConnect {
     
     private static String username, password;
-    private static String urlAddress = "http://git.globallit.org/GenerateKeys.php";
+    private static String sshKeysURL = "http://git.globallit.org/GenerateKeys.php";    
+    private static String checkCredentialsURL = "http://git.globallit.org/checkCredentials.php";
+
     
     public void setUsername(String username)
     {
@@ -61,7 +63,7 @@ public class ServerConnect {
     {
         if(this.username.isEmpty() || this.password.isEmpty())
             throw new Exception("Undefined Username and Password");
-        URL url = new URL(this.urlAddress);
+        URL url = new URL(this.sshKeysURL);
         Map<String,Object> params = new LinkedHashMap<>();
         params.put("username", this.username);
         params.put("password", this.password);
@@ -75,7 +77,7 @@ public class ServerConnect {
     public boolean checkCredentials(String usr, String passwd)
     {
         try {
-            URL url = new URL(this.urlAddress);
+            URL url = new URL(this.checkCredentialsURL);
             Map<String,Object> params = new LinkedHashMap<>();
             params.put("username", usr);
             params.put("password", passwd);
