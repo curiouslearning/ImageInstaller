@@ -93,6 +93,12 @@ public class ServerConnect {
         return false;
     }
     
+    public void saveCredentials(String username, String password)
+    {
+    	setUsername(username);
+    	setPassword(password);
+    }
+    
     
     //Returns array: 0=PublicKey, 1=PrivateKey
     private String[] parseKeys(String keysToParse)

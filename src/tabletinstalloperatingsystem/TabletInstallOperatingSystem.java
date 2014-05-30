@@ -35,10 +35,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.sun.security.ntlm.Server;
+
 public class TabletInstallOperatingSystem {
     private static String username, password, ssid, networkPassword;
+    private static ServerConnect server;
+    private static String cmd = "";
 
     public static void main(String[] args) {
+    	
+    	Util util = new Util();
+    	
+    	if(util.isWindows())
+    		cmd = "cmd /c ";
         
     	System.out.println("*************************************************\n" +
     			"Welcome to the Image Installer for Android Images\n" +
@@ -51,7 +60,7 @@ public class TabletInstallOperatingSystem {
     			"*************************************************");
     	
         //Check credentials before doing any processing
-        ServerConnect server = new ServerConnect();
+        server = new ServerConnect();
         while(true)
         {
             System.out.println("Please enter your username");
@@ -64,12 +73,13 @@ public class TabletInstallOperatingSystem {
                 System.out.println("Your credentials don't match.\nPlease try again.");
             else
             {
+            	server.saveCredentials(username, password);
                 System.out.println("Your credentials match!");
                 break;
             }
         }
         
-        //Get network infrmation that will be used for every tablet
+        //Get network information that will be used for every tablet
         System.out.println("Please enter the SSID of the default network connection.\n"
                 + "(Leave blank if there will not be a default connection)");
         ssid = readUserInput();
@@ -125,14 +135,15 @@ public class TabletInstallOperatingSystem {
         List<String> devices = new LinkedList<>();
         try 
             { 
-            Process p=Runtime.getRuntime().exec("adb devices"); 
+        	
+            Process p=Runtime.getRuntime().exec(cmd + " adb devices"); 
             p.waitFor(); 
             BufferedReader reader=new BufferedReader(
                 new InputStreamReader(p.getInputStream())
             ); 
             String line; 
             //Skip the first line
-            String temp = reader.readLine();
+            reader.readLine();
             while((line = reader.readLine()) != null) 
             { 
                 if(line.length() > 0)
@@ -144,12 +155,14 @@ public class TabletInstallOperatingSystem {
             }
             //remove the empty line from the count
             numberOfDevices--;
+            if(numberOfDevices == -1)
+            	numberOfDevices = 0;
         }
         catch(IOException | InterruptedException e1) 
         {
             System.out.println("Exception: " + e1);
         } 
-        System.out.println("Number of devices: " + numberOfDevices +1);
+        System.out.println("Number of devices: " + numberOfDevices);
 
         //Loop over all discovered devices
         for(int i = 0; i < devices.size(); i++)
@@ -158,7 +171,7 @@ public class TabletInstallOperatingSystem {
                 continue;
             //Code below is to pull the label from a pre-defined array
             String label = null;
-            System.out.println(devices.get(i).split("\t")[0]);
+            System.out.println("Installing Image for: " + devices.get(i).split("\t")[0]);
             
             //Generate the label
             label = tabletInfo.getTabletLabel() + tabletInfo.getSequenceNumber();
@@ -170,48 +183,58 @@ public class TabletInstallOperatingSystem {
             //Get the device label
             String deviceSerialId = devices.get(i).split("\t")[0];
 
-            String cmd, adb, root, push, reboot, line, serverStop, serverStart;
-            cmd = "";
+            String adb, root, push, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri;
+           
             adb = " adb -s ";
-            serverStop = cmd + adb + " adb kill-server ";
-            serverStart = cmd + adb + " adb start-server";
-            root = cmd + adb + deviceSerialId + " root";
-            push = cmd + adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
-            reboot = cmd + adb + deviceSerialId + " reboot recovery";
+            serverStop = adb + " adb kill-server ";
+            serverStart = adb + " adb start-server";
+            root = adb + deviceSerialId + " root";
+            push = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
+            
+            //TODO make temp file and push to tablet
+            
+            String[] SSHKeys = new String[2];
+            try 
+            {
+            	SSHKeys = server.getSSHKeys(deviceSerialId);
+            }
+            catch (Exception e) {}
+            
+            sshKeysPrivate = "echo " + SSHKeys[0] + " > temp/.id_rsa";
+            sshKeysPublic = "echo " + SSHKeys[1] + " > temp/.id_rsa.pub";
+            
+            sshCmdPri = sshKeysPrivate = adb + " push " + sshKeysPrivate + " /data/.ssh/";
+            sshCmdPub = sshKeysPublic = adb + " push " + sshKeysPublic + " /data/.ssh/";
+            
+            //TODO  Finish pushing the SSH keys to the tablet.  Not sure if the drive needs to be mounted or not 
+            reboot =  adb + deviceSerialId + " reboot recovery";
 
             //Kick off the install process
             try 
             {
+            	
+            	
                 //Stop and start the server
-                Process p = Runtime.getRuntime().exec(serverStop);
-                p.waitFor();
-                p = Runtime.getRuntime().exec(serverStart);
-                p.waitFor();
+                executeCommand(serverStop);
+                executeCommand(serverStart);
 
                 //start the install process
-                p = Runtime.getRuntime().exec(root); 
-                p.waitFor();
-                BufferedReader reader=new BufferedReader(
-                    new InputStreamReader(p.getInputStream())
-                );
-                while((line = reader.readLine()) != null) System.out.println(line);
+                executeCommand(root);
                 Thread.sleep(2000);
-                p = Runtime.getRuntime().exec(push); 
-                p.waitFor();
-                reader=new BufferedReader(
-                    new InputStreamReader(p.getInputStream())
-                );
-                while((line = reader.readLine()) != null) System.out.println(line);
+                
+                //push the SSH keys
+                //executeCommand(sshCmdPri);
+                //executeCommand(sshCmdPub);
+                
+                //Push the script
+                executeCommand(push);
                 Thread.sleep(2000);
-                p = Runtime.getRuntime().exec(reboot); 
-                p.waitFor();
-                reader=new BufferedReader(
-                    new InputStreamReader(p.getInputStream())
-                );
-                while((line = reader.readLine()) != null) System.out.println(line);
+                
+                //Reboot the device to start the install
+                executeCommand(reboot);
                 Thread.sleep(2000);
             }
-            catch(IOException | InterruptedException e1) {} 
+            catch(Exception e1) {} 
             tabletInfo.addDevice(devices.get(i).split("\t")[0]);
             System.out.println(label + "  has been completed.");
         }
@@ -232,8 +255,7 @@ public class TabletInstallOperatingSystem {
         //If no input, set to default
         tabletInfo.setSequenceNumber(
         tempUserInput.isEmpty() ? 1 : Integer.parseInt(tempUserInput));
-        
-
+       
     }
     
     private static void insertLabelInfoFile(String label)
@@ -251,18 +273,20 @@ public class TabletInstallOperatingSystem {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File("openrecoveryscript")));
             //Clear out the file
             bw.write("");
+            String newLines = "\n\r";
             while((line = br.readLine()) != null)
             {
                 if(line.contains("--"))
                 {
                     line = "cmd echo \"" + label + "\" > " + labelDirectory;
+                    line += newLines;
+                    line += "cmd echo -e 'network={\n\tssid="+ ssid +"\n\tpsk=" + networkPassword + "\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf";
                 }
                 bw.append(line + "\n");
             }
             bw.flush();
         }
         catch (IOException e) {}
-        
     }
     
     private static String readUserInput()
@@ -303,5 +327,20 @@ public class TabletInstallOperatingSystem {
             tempHashMap.put(tempArray[1].trim(), tempArray[0].trim());
         }
         return tempHashMap;
+    }
+    
+    private static void executeCommand(String command) throws Exception
+    {
+    	String line;
+    	command = cmd + command;
+    	
+        Process p = Runtime.getRuntime().exec(command); 
+        p.waitFor();
+        BufferedReader reader=new BufferedReader(
+            new InputStreamReader(p.getInputStream())
+        );
+        while((line = reader.readLine()) != null) 
+        	System.out.println(line);
+    	
     }
 }
