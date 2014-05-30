@@ -41,6 +41,9 @@ public class TabletInstallOperatingSystem {
     private static String username, password, ssid, networkPassword;
     private static ServerConnect server;
     private static String cmd = "";
+    private static List<String> devices = new LinkedList<>();
+    private static TabletInformation tabletInfo = TabletInformation.getInstance();
+    
 
     public static void main(String[] args) {
     	
@@ -131,8 +134,7 @@ public class TabletInstallOperatingSystem {
     private static void processTablets(HashMap<String, String> serialToLabelMapping)
     {
         int numberOfDevices = 0;
-        TabletInformation tabletInfo = TabletInformation.getInstance();
-        List<String> devices = new LinkedList<>();
+        
         try 
             { 
         	
@@ -183,13 +185,13 @@ public class TabletInstallOperatingSystem {
             //Get the device label
             String deviceSerialId = devices.get(i).split("\t")[0];
 
-            String adb, root, push, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri;
+            String adb, root, pushRecoveryScript, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri;
            
             adb = " adb -s ";
             serverStop = adb + " adb kill-server ";
             serverStart = adb + " adb start-server";
             root = adb + deviceSerialId + " root";
-            push = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
+            pushRecoveryScript = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
             
             //TODO make temp file and push to tablet
             
@@ -200,19 +202,24 @@ public class TabletInstallOperatingSystem {
             }
             catch (Exception e) {}
             
-            sshKeysPrivate = "echo " + SSHKeys[0] + " > temp/.id_rsa";
-            sshKeysPublic = "echo " + SSHKeys[1] + " > temp/.id_rsa.pub";
+            String idRsaPublic, idRsaPrivate;
+            idRsaPublic = ".id_rsa.pub";
+            idRsaPrivate = ".id_rsa";
             
-            sshCmdPri = sshKeysPrivate = adb + " push " + sshKeysPrivate + " /data/.ssh/";
-            sshCmdPub = sshKeysPublic = adb + " push " + sshKeysPublic + " /data/.ssh/";
+            Util util = new Util();
+            util.writeToFile(idRsaPublic, SSHKeys[0]);
+            util.writeToFile(idRsaPrivate, SSHKeys[1]);
+            
+            sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /data/.ssh/";
+            sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /data/.ssh/";
             
             //TODO  Finish pushing the SSH keys to the tablet.  Not sure if the drive needs to be mounted or not 
             reboot =  adb + deviceSerialId + " reboot recovery";
-
+            
             //Kick off the install process
             try 
             {
-            	
+            	System.out.println("Installing...");
             	
                 //Stop and start the server
                 executeCommand(serverStop);
@@ -220,21 +227,28 @@ public class TabletInstallOperatingSystem {
 
                 //start the install process
                 executeCommand(root);
-                Thread.sleep(2000);
+                Thread.sleep(500);
                 
                 //push the SSH keys
-                //executeCommand(sshCmdPri);
-                //executeCommand(sshCmdPub);
+                executeCommand(sshCmdPri);
+                executeCommand(sshCmdPub);
                 
                 //Push the script
-                executeCommand(push);
-                Thread.sleep(2000);
+                executeCommand(pushRecoveryScript);
+                Thread.sleep(500);
                 
                 //Reboot the device to start the install
                 executeCommand(reboot);
                 Thread.sleep(2000);
             }
-            catch(Exception e1) {} 
+            catch(Exception e) 
+            {
+            	System.out.println("Error in executing commands on the tablet: " + e);
+            } 
+            
+            //remove ssh keys from the file system
+            util.removeAllWrittenFiles();
+            
             tabletInfo.addDevice(devices.get(i).split("\t")[0]);
             System.out.println(label + "  has been completed.");
         }
@@ -280,7 +294,7 @@ public class TabletInstallOperatingSystem {
                 {
                     line = "cmd echo \"" + label + "\" > " + labelDirectory;
                     line += newLines;
-                    line += "cmd echo -e 'network={\n\tssid="+ ssid +"\n\tpsk=" + networkPassword + "\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf";
+                    line += "cmd echo -e 'network={\\n\tssid=\""+ ssid +"\"\\n\tpsk=\"" + networkPassword + "\"\\n\tkey_mgmt=WPA-PSK\\n\\tpriority=2\\n}' >> /data/misc/wifi/wpa_supplicant.conf";
                 }
                 bw.append(line + "\n");
             }
