@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
  */
 
-package tabletinstalloperatingsystem;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,7 +34,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sun.security.ntlm.Server;
 
 public class TabletInstallOperatingSystem {
     private static String username, password, ssid, networkPassword;

@@ -22,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
  */
 
-package tabletinstalloperatingsystem;
-
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;

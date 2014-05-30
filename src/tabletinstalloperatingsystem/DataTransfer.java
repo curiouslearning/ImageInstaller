@@ -23,7 +23,6 @@ THE SOFTWARE.
  */
 
 
-package tabletinstalloperatingsystem;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
