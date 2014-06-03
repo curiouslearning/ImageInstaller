@@ -1,0 +1,8 @@
+print "Starting wipe..."
+wipe cache
+wipe dalvik
+
+print "Starting restore install..."
+restore /external_sd/tabimage
+
+print "Done!"

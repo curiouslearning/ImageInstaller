@@ -1,0 +1,19 @@
+print "Starting Wipe..."
+wipe cache
+wipe data
+wipe dalvik
+print "Installing Cyanogenmod System..."
+install /sdcard/cm/cm-10.1-20140113-NIGHTLY-wingray.zip
+
+print "Starting restore Install..."
+restore /sdcard/3.0.2-xoom
+
+print "Customizing..."
+cmd mkdir -p /data/media/0/Android/data/edu.mit.media.prg.mentoring_app/files
+cmd cp /sdcard/sdcard/apps.json /data/media/0/Android/data/edu.mit.media.prg.mentoring_app/files
+--
+cmd echo "3.0.2-xoom" > /data/media/0/version.txt
+cmd echo -e 'network={\n\tssid="ECWireless"\n\tpsk="ecss20!2"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
+cmd mkdir -p /data/media/0/Movies
+cmd cp /sdcard/Movies/*.* /data/media/0/Movies/
+print "Finished."
