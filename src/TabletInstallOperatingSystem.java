@@ -101,6 +101,14 @@ public class TabletInstallOperatingSystem {
                     System.out.println("The two passwords do not match");
                 else
                 {
+                	if(networkPassword.length()<8)
+                	{
+                		System.out.println("PASSWORD IS LESS THAN 8 CHARACTERS\n" +
+                				"THIS WILL NOT WORK IN NETWORK SETTINGS");
+                		System.out.println("Do you wish to continue with this password? (y/n)");
+                		if(readUserInput().toLowerCase().equals("n"))
+                			continue;
+                	}
                     System.out.println("Network credentials saved!");
                     break;
                 }
@@ -176,7 +184,7 @@ public class TabletInstallOperatingSystem {
             System.out.println("Installing Image for: " + devices.get(i).split("\t")[0]);
             
             //Generate the label
-            label = tabletInfo.getTabletLabel() + tabletInfo.getSequenceNumber();
+            label = tabletInfo.getTabletLabel() + "-" + tabletInfo.getSequenceNumber();
             //increment the sequence by one for the next iteration
             tabletInfo.incrementSequenceNumber();
             
@@ -185,7 +193,7 @@ public class TabletInstallOperatingSystem {
             //Get the device label
             String deviceSerialId = devices.get(i).split("\t")[0] + " ";
 
-            String adb, root, pushRecoveryScript, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri;
+            String adb, root, pushRecoveryScript, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri, sshDirectory;
            
             adb = " adb -s ";
             serverStop = adb + " adb kill-server ";
@@ -203,13 +211,14 @@ public class TabletInstallOperatingSystem {
             catch (Exception e) {}
             
             String idRsaPublic, idRsaPrivate;
-            idRsaPublic = ".id_rsa.pub";
-            idRsaPrivate = ".id_rsa";
+            idRsaPublic = "id_rsa.pub";
+            idRsaPrivate = "id_rsa";
             
             Util util = new Util();
             util.writeToFile(idRsaPublic, SSHKeys[0]);
             util.writeToFile(idRsaPrivate, SSHKeys[1]);
             
+            sshDirectory = adb + deviceSerialId + "shell mkdir /sdcard/.ssh/";
             sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /sdcard/.ssh/";
             sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /sdcard/.ssh/";
             
@@ -222,6 +231,7 @@ public class TabletInstallOperatingSystem {
             try {
             	
             	//push the ssh keys
+            	executeCommand(sshDirectory);
             	executeCommand(sshCmdPri);
             	executeCommand(sshCmdPub);
             	
@@ -287,7 +297,7 @@ public class TabletInstallOperatingSystem {
         TabletInformation tabletInfo = TabletInformation.getInstance();
         //Get the info from the user   
         System.out.println("Please enter the generic Tablet Label with no "
-            + "spaces and no numeric identifier (i.e. ERL-GSU-)");
+            + "spaces and no numeric identifier (i.e. ERL-GSU)");
         tabletInfo.setTabletLabel(readUserInput());
 
         System.out.println("Please enter the starting sequence number.  "
@@ -326,6 +336,15 @@ public class TabletInstallOperatingSystem {
                     line += newLines;
                     line += "cmd echo -e \'network={\\n\\tssid=\""+ ssid +"\"\\n\\tpsk=\"" + networkPassword + "\"\\n\\tkey_mgmt=WPA-PSK\\n\\tpriority=2\\n}\' >> /data/misc/wifi/wpa_supplicant.conf";
                 }
+                if(line.contains("***ssid***"))
+        		{
+                	line += ssid + "\n";
+        		}
+                if(line.contains("***psk***"))
+                {
+                	line += networkPassword + "\n";
+                }
+                		
                 bw.append(line + "\n");
             }
             bw.flush();
