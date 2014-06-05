@@ -41,6 +41,7 @@ public class TabletInstallOperatingSystem {
     private static String cmd = "";
     private static List<String> devices = new LinkedList<>();
     private static TabletInformation tabletInfo = TabletInformation.getInstance();
+    private static String CommandFile = "adbCommandFile.txt";
     
 
     public static void main(String[] args) {
@@ -111,7 +112,7 @@ public class TabletInstallOperatingSystem {
         determineConfigFile();
         
         //Get the serial number to label mapping
-        String[] serialToLabel = serialToLabelMapping(serialLabelMappingFile);
+        String[] serialToLabel = readFileIntoArray(serialLabelMappingFile);
         
         //Parse the array into a hash table 
         HashMap<String, String> serialToLabelHashMap = mapIt(serialToLabel);
@@ -167,8 +168,9 @@ public class TabletInstallOperatingSystem {
         //Loop over all discovered devices
         for(int i = 0; i < devices.size(); i++)
         {
+
             if(tabletInfo.checkIfPresent(devices.get(i).split("\t")[0]))
-                continue;
+            continue;
             //Code below is to pull the label from a pre-defined array
             String label = null;
             System.out.println("Installing Image for: " + devices.get(i).split("\t")[0]);
@@ -181,7 +183,7 @@ public class TabletInstallOperatingSystem {
             insertLabelInfoFile(label);
 
             //Get the device label
-            String deviceSerialId = devices.get(i).split("\t")[0];
+            String deviceSerialId = devices.get(i).split("\t")[0] + " ";
 
             String adb, root, pushRecoveryScript, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri;
            
@@ -208,44 +210,69 @@ public class TabletInstallOperatingSystem {
             util.writeToFile(idRsaPublic, SSHKeys[0]);
             util.writeToFile(idRsaPrivate, SSHKeys[1]);
             
-            sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /data/.ssh/";
-            sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /data/.ssh/";
+            sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /sdcard/.ssh/";
+            sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /sdcard/.ssh/";
             
             //TODO  Finish pushing the SSH keys to the tablet.  Not sure if the drive needs to be mounted or not 
             reboot =  adb + deviceSerialId + " reboot recovery";
             
-            //Kick off the install process
-            try 
-            {
-            	System.out.println("Installing...");
+            //Get a list of all commands to run
+            String[] listOfCommands = readFileIntoArray(new File(CommandFile));
+            
+            try {
             	
-                //Stop and start the server
-                executeCommand(serverStop);
-                Thread.sleep(1000);
-                executeCommand(serverStart);
-
-                //start the install process
-                executeCommand(root);
-                Thread.sleep(1000);
-                
-                //push the SSH keys
-                executeCommand(sshCmdPri);
-                Thread.sleep(1000);
-                executeCommand(sshCmdPub);
-                Thread.sleep(1000);
-                
-                //Push the script
-                executeCommand(pushRecoveryScript);
-                Thread.sleep(1000);
-                
-                //Reboot the device to start the install
-                executeCommand(reboot);
-                
+            	//push the ssh keys
+            	executeCommand(sshCmdPri);
+            	executeCommand(sshCmdPub);
+            	
+            	//Run a command file
+            	executeCommand("./install.sh");
+            	
+            	
+	            //Run each command in the list with the serialID prepended 
+//	            for(String command : listOfCommands)
+//	            {
+//	            	executeCommand(adb + deviceSerialId + " " + command);
+//	            	Thread.sleep(1000);
+//	            }
             }
-            catch(Exception e) 
+            catch(Exception e)
             {
-            	System.out.println("Error in executing commands on the tablet: " + e);
-            } 
+            	System.out.println("Exception in running commands: " + e);
+            }
+            
+//            //Kick off the install process
+//            try 
+//            {
+//            	System.out.println("Installing...");
+//            	
+//                //Stop and start the server
+//                executeCommand(serverStop);
+//                Thread.sleep(1000);
+//                executeCommand(serverStart);
+//
+//                //start the install process
+//                executeCommand(root);
+//                Thread.sleep(1000);
+//                
+//                //push the SSH keys
+//                executeCommand(sshCmdPri);
+//                Thread.sleep(1000);
+//                executeCommand(sshCmdPub);
+//                Thread.sleep(1000);
+//                
+//                //Push the script
+//                executeCommand(pushRecoveryScript);
+//                Thread.sleep(1000);
+//                
+//                //Reboot the device to start the install
+//                executeCommand(reboot);
+//                
+//            }
+//            catch(Exception e) 
+//            {
+//            	System.out.println("Error in executing commands on the tablet: " + e);
+//            } 
             
             //remove ssh keys from the file system
             util.removeAllWrittenFiles();
@@ -275,7 +302,7 @@ public class TabletInstallOperatingSystem {
     
     private static void insertLabelInfoFile(String label)
     {
-        String labelDirectory = "/data/media/0/label.txt";
+        String labelDirectory = "/sdcard/label.txt";
         File file = new File("openrecoveryscript.unnamed");
         if(!file.exists()) 
         {
@@ -288,14 +315,16 @@ public class TabletInstallOperatingSystem {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File("openrecoveryscript")));
             //Clear out the file
             bw.write("");
-            String newLines = "\n\r";
+            String newLines = "\n";
             while((line = br.readLine()) != null)
             {
                 if(line.contains("--"))
                 {
-                    line = "cmd echo \"" + label + "\" > " + labelDirectory;
+                    line = "cmd -e echo \"" + label + "\" > " + labelDirectory;
                     line += newLines;
-                    line += "cmd echo -e 'network={\\n\tssid=\""+ ssid +"\"\\n\tpsk=\"" + networkPassword + "\"\\n\tkey_mgmt=WPA-PSK\\n\\tpriority=2\\n}' >> /data/misc/wifi/wpa_supplicant.conf";
+                    line += "print \"Setting up wirless\"";
+                    line += newLines;
+                    line += "cmd echo -e \'network={\\n\\tssid=\""+ ssid +"\"\\n\\tpsk=\"" + networkPassword + "\"\\n\\tkey_mgmt=WPA-PSK\\n\\tpriority=2\\n}\' >> /data/misc/wifi/wpa_supplicant.conf";
                 }
                 bw.append(line + "\n");
             }
@@ -315,7 +344,7 @@ public class TabletInstallOperatingSystem {
         return "-1";
     }
     
-    private static String[] serialToLabelMapping(File file)
+    private static String[] readFileIntoArray(File file)
     {
         String line;
         List<String> serialToLabel = new LinkedList();

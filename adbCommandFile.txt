@@ -1,0 +1,6 @@
+push openrecoveryscript /sdcard/
+push recoveryinstaller.sh /sdcard/
+shell "cat /sdcard/recoveryinstaller.sh | bash"
+shell "cat /sdcard/recoveryinstaller.sh | sh"
+sleep 1
+reboot recovery 
