@@ -132,6 +132,7 @@ public class TabletInstallOperatingSystem {
             try 
             {
                 processTablets(serialToLabelHashMap);
+                checkForPause();
                 Thread.sleep(4000);
             }
             catch(InterruptedException e) {}
@@ -405,5 +406,11 @@ public class TabletInstallOperatingSystem {
         while((line = reader.readLine()) != null) 
         	System.out.println(line);
     	
+    }
+    
+    private static void checkForPause()
+    {
+    	System.out.println("Waiting to continue... Hit 'Enter' to continue");
+    	readUserInput();
     }
 }
