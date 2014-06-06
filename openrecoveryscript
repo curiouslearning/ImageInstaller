@@ -8,9 +8,9 @@ restore /external_sd/tabimage
 print "Customizing..."
 cmd mkdir /sdcard/.ssh
 cmd cp /sdcard/apps.json  /sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/apps.json
-cmd -e echo "a-1" > /sdcard/label.txt
+cmd -e echo "please-1" > /sdcard/label.txt
 print "Setting up wirless"
-cmd echo -e 'network={\n\tssid="hell"\n\tpsk="hello"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
+cmd echo -e 'network={\n\tssid="hhh"\n\tpsk="ddd"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
 cmd echo -e "1.0.0_tab3lite" > /sdcard/version.txt
 cmd sleep 15
 print "Done!"

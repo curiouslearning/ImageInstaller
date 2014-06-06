@@ -330,7 +330,7 @@ public class TabletInstallOperatingSystem {
             {
                 if(line.contains("--"))
                 {
-                    line = "cmd -e echo \"" + label + "\" > " + labelDirectory;
+                    line = "cmd echo -e \"" + label + "\" > " + labelDirectory;
                     line += newLines;
                     line += "print \"Setting up wirless\"";
                     line += newLines;
