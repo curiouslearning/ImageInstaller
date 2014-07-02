@@ -32,7 +32,8 @@ public class ServerConnect {
     private static String username, password;
     private static String sshKeysURL = "http://git.globallit.org/GenerateKeys.php";    
     private static String checkCredentialsURL = "http://git.globallit.org/checkCredentials.php";
-
+    private static String checkLabelURL = "http://git.globallit.org/checkLabel.php";
+    private static String updateLabelURL = "http://git.globallit.org/updateLabel.php";
     
     public void setUsername(String username)
     {
@@ -57,19 +58,23 @@ public class ServerConnect {
         return null;
     }
     
-    public String[] getSSHKeys(String serialId) throws Exception
+    public String[] getSSHKeys(String serialId) 
     {
-        if(this.username.isEmpty() || this.password.isEmpty())
-            throw new Exception("Undefined Username and Password");
-        URL url = new URL(this.sshKeysURL);
-        Map<String,Object> params = new LinkedHashMap<>();
-        params.put("username", this.username);
-        params.put("password", this.password);
-        params.put("serialId", serialId);
+    	try{
+    		if(this.username.isEmpty() || this.password.isEmpty())
+    			throw new Exception("Undefined Username and Password");
         
-       String unformattedKey = new DataTransfer().postData(url, params);
-       
-       return parseKeys(unformattedKey);
+	        URL url = new URL(this.sshKeysURL);
+	        Map<String,Object> params = new LinkedHashMap<>();
+	        params.put("username", this.username);
+	        params.put("password", this.password);
+	        params.put("serialId", serialId);
+	        
+	       String unformattedKey = new DataTransfer().postData(url, params);
+	       
+	       return parseKeys(unformattedKey);
+        }
+        catch(Exception e) {System.out.println("Exception while getting SSH Keys: " + e); return null;}
     }
 
     public boolean checkCredentials(String usr, String passwd)
@@ -97,6 +102,37 @@ public class ServerConnect {
     	setPassword(password);
     }
     
+    public String checkForPreExistingLabel(String serialId)
+    {
+    	try {
+            URL url = new URL(this.checkLabelURL);
+            Map<String,Object> params = new LinkedHashMap<>();
+            params.put("serialId", serialId);
+            
+            return new DataTransfer().postData(url, params);
+           
+        }
+        catch(Exception e) {
+            System.out.println("Exception in checkCredentials: " + e);
+            return "";
+        }
+    }
+    
+    public String setLabel(String label, String serialId)
+    {
+    	try {
+            URL url = new URL(this.updateLabelURL);
+            Map<String,Object> params = new LinkedHashMap<>();
+            params.put("label", label);
+            params.put("serialId", serialId);
+            
+            return new DataTransfer().postData(url, params);
+        }
+        catch(Exception e) {
+            System.out.println("Exception in checkCredentials: " + e);
+            return "";
+        }
+    }
     
     //Returns array: 0=PublicKey, 1=PrivateKey
     private String[] parseKeys(String keysToParse)

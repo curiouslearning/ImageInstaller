@@ -24,10 +24,8 @@ THE SOFTWARE.
 
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -36,14 +34,13 @@ import java.util.List;
 
 
 public class TabletInstallOperatingSystem {
-    private static String username, password, ssid, networkPassword;
+    private static String username, password;
     private static ServerConnect server;
     private static String cmd = "";
     private static List<String> devices = new LinkedList<>();
     private static TabletInformation tabletInfo = TabletInformation.getInstance();
     private static String CommandFile = "adbCommandFile.txt";
-    
-
+        
     public static void main(String[] args) {
     	
     	Util util = new Util();
@@ -80,22 +77,75 @@ public class TabletInstallOperatingSystem {
                 break;
             }
         }
+        int tabletOption;
+        while(true)
+        {
+        	int counter = 0;
+        	System.out.println("Please select a tablet option from below:\n");
+        	//Iterate over all tablets
+        	for(TabletOptions name : TabletOptions.values())
+        	{
+        		System.out.println(counter++ + ". " + name.getReadableName() );
+        	}
+        	
+        	tabletOption = Integer.parseInt(readUserInput());
+        	
+        	break;
+        }
         
-        //Get network information that will be used for every tablet
+        TabletOptions[] tabletHardware = TabletOptions.values();
+        //Save the tabletOption
+        TabletConfigDetails.getInstance().setTabletOption(tabletHardware[tabletOption]);
+        
+        System.out.println("Will you be using a Raspberry Pi with this setup? Y or N \n"
+        		+ "(If you are unsure, you prpbably arent)");
+        if(readUserInput().toUpperCase().equals("y"))
+        	loadRPConfig();
+        else
+        	getNetworkInformation();
+        
+//        File serialLabelMappingFile = new File("serialToLabelMapping.txt");
+//        //Check if there is a file in our directory for versioning information
+
+        getTabletLabelAndSequenceNumber();
+        
+//        //Get the serial number to label mapping
+//        String[] serialToLabel = readFileIntoArray(serialLabelMappingFile);
+        
+        //Parse the array into a hash table 
+        HashMap<String, String> serialToLabelHashMap = new HashMap<String, String>();	//mapIt(serialToLabel);
+        
+        //start processing tablets
+        //Continue processing until the program closed
+        while(true)
+        {
+            processTablets(serialToLabelHashMap);
+            checkForPause();
+            //Thread.sleep(4000);
+        }
+    }
+    
+    private static void getNetworkInformation()
+    {
+    	//Get network information that will be used for every tablet
         System.out.println("Please enter the SSID of the default network connection.\n"
                 + "(Leave blank if there will not be a default connection)");
-        ssid = readUserInput();
+        String ssid = readUserInput();
+        TabletConfigDetails tabletConfig = TabletConfigDetails.getInstance();
+        
         if(ssid.isEmpty())
         {
             System.out.println("There will not be a default network.");
-            networkPassword = ssid = null;
+            tabletConfig.setNetworkPassword(null);
+            tabletConfig.setSsid(null);
         }
         else
         {
+        	tabletConfig.setSsid(ssid);
             while(true)
             {
                 System.out.println("Please enter the network password");
-                networkPassword = readUserInput();
+                String networkPassword = readUserInput();
                 System.out.println("Please enter the password again");
                 if(!readUserInput().equals(networkPassword))
                     System.out.println("The two passwords do not match");
@@ -109,98 +159,33 @@ public class TabletInstallOperatingSystem {
                 		if(readUserInput().toLowerCase().equals("n"))
                 			continue;
                 	}
+                	tabletConfig.setNetworkPassword(networkPassword);
                     System.out.println("Network credentials saved!");
                     break;
                 }
             }
         }
-        
-        File serialLabelMappingFile = new File("serialToLabelMapping.txt");
-        //Check if there is a file in our directory for versioning information
-        determineConfigFile();
-        
-        //Get the serial number to label mapping
-        String[] serialToLabel = readFileIntoArray(serialLabelMappingFile);
-        
-        //Parse the array into a hash table 
-        HashMap<String, String> serialToLabelHashMap = mapIt(serialToLabel);
-        
-        //start processing tablets
-        //Continue processing until the program closed
-        while(true)
-        {
-            try 
-            {
-                processTablets(serialToLabelHashMap);
-                checkForPause();
-                Thread.sleep(4000);
-            }
-            catch(InterruptedException e) {}
-        }
     }
     
     private static void processTablets(HashMap<String, String> serialToLabelMapping)
     {
-        int numberOfDevices = 0;
+        int numberOfDevices = getNumberOfDevices();
+        TabletConfigDetails tabletConfig = TabletConfigDetails.getInstance();
         
-        try 
-            { 
-        	
-            Process p=Runtime.getRuntime().exec(cmd + " adb devices"); 
-            p.waitFor(); 
-            BufferedReader reader=new BufferedReader(
-                new InputStreamReader(p.getInputStream())
-            ); 
-            String line; 
-            //Skip the first line
-            reader.readLine();
-            while((line = reader.readLine()) != null) 
-            { 
-                if(line.length() > 0)
-                {
-                    numberOfDevices++;
-                    devices.add(line);
-                    System.out.println(line);
-                }
-            }
-            //remove the empty line from the count
-            numberOfDevices--;
-            if(numberOfDevices == -1)
-            	numberOfDevices = 0;
-        }
-        catch(IOException | InterruptedException e1) 
-        {
-            System.out.println("Exception: " + e1);
-        } 
         System.out.println("Number of devices: " + numberOfDevices);
 
         //Loop over all discovered devices
         for(int i = 0; i < devices.size(); i++)
         {
-
-            if(tabletInfo.checkIfPresent(devices.get(i).split("\t")[0]))
-            continue;
-            //Code below is to pull the label from a pre-defined array
-            String label = null;
-            System.out.println("Installing Image for: " + devices.get(i).split("\t")[0]);
+            if(tabletInfo.checkIfPresent(readSerialId(i)))
+            	continue;
             
-            //Generate the label
-            label = tabletInfo.getTabletLabel() + "-" + tabletInfo.getSequenceNumber();
-            //increment the sequence by one for the next iteration
-            tabletInfo.incrementSequenceNumber();
+            String deviceSerialId = readSerialId(i);
+            generateLabel(i, deviceSerialId);
             
-            insertLabelInfoFile(label);
-
-            //Get the device label
-            String deviceSerialId = devices.get(i).split("\t")[0] + " ";
-
-            String adb, root, pushRecoveryScript, reboot, line, serverStop, serverStart, sshKeysPublic, sshKeysPrivate, sshCmdPub, sshCmdPri, sshDirectory;
-           
-            adb = " adb -s ";
-            serverStop = adb + " adb kill-server ";
-            serverStart = adb + " adb start-server";
-            root = adb + deviceSerialId + " root";
-            pushRecoveryScript = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
+//            serverStop = adb + " adb kill-server ";
+//            serverStart = adb + " adb start-server";
+//            root = adb + deviceSerialId + " root";
             
             //TODO make temp file and push to tablet
             
@@ -219,81 +204,59 @@ public class TabletInstallOperatingSystem {
             util.writeToFile(idRsaPublic, SSHKeys[0]);
             util.writeToFile(idRsaPrivate, SSHKeys[1]);
             
-            sshDirectory = adb + deviceSerialId + "shell mkdir /sdcard/.ssh/";
-            sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /sdcard/.ssh/";
-            sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /sdcard/.ssh/";
             
-            //TODO  Finish pushing the SSH keys to the tablet.  Not sure if the drive needs to be mounted or not 
-            reboot =  adb + deviceSerialId + " reboot recovery";
+//            adb = " adb -s ";
+//            
+//            pushRecoveryScript = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
+//            sshDirectory = adb + deviceSerialId + "shell mkdir /sdcard/.ssh/";
+//            sshCmdPri = sshKeysPrivate = adb + deviceSerialId + " push " + idRsaPrivate + " /sdcard/.ssh/";
+//            sshCmdPub = sshKeysPublic = adb + deviceSerialId + " push " + idRsaPublic + " /sdcard/.ssh/";
+//            
+//            
+//            reboot =  adb + deviceSerialId + " reboot recovery";
             
-            //Get a list of all commands to run
-            String[] listOfCommands = readFileIntoArray(new File(CommandFile));
             
-            try {
-            	
-            	//push the ssh keys
-            	executeCommand(sshDirectory);
-            	executeCommand(sshCmdPri);
-            	executeCommand(sshCmdPub);
-            	
-            	//Run a command file
-            	executeCommand("./install.sh");
-            	
-            	
-	            //Run each command in the list with the serialID prepended 
+            
+//            //Get a list of all commands to run
+//            String[] listOfCommands = readFileIntoArray(new File(CommandFile));
+            
+
+        	for(String command : tabletConfig.getTabletOption().getInstallationCommands(deviceSerialId))
+        	{
+        		System.out.println(readCommandResponse(executeCommand(command)));
+        		try { Thread.sleep(500);} catch(Exception e){}
+        	}
+        	
+        	
+//            	//push the ssh keys
+//            	executeCommand(sshDirectory);
+//            	executeCommand(sshCmdPri);
+//            	executeCommand(sshCmdPub);
+//            	
+//            	//Run a command file
+//            	executeCommand("./install.sh");
+//            	
+//            	
+//            	
+            //Run each command in the list with the serialID prepended 
 //	            for(String command : listOfCommands)
 //	            {
 //	            	executeCommand(adb + deviceSerialId + " " + command);
 //	            	Thread.sleep(1000);
 //	            }
-            }
-            catch(Exception e)
-            {
-            	System.out.println("Exception in running commands: " + e);
-            }
+
             
-//            //Kick off the install process
-//            try 
-//            {
-//            	System.out.println("Installing...");
-//            	
-//                //Stop and start the server
-//                executeCommand(serverStop);
-//                Thread.sleep(1000);
-//                executeCommand(serverStart);
-//
-//                //start the install process
-//                executeCommand(root);
-//                Thread.sleep(1000);
-//                
-//                //push the SSH keys
-//                executeCommand(sshCmdPri);
-//                Thread.sleep(1000);
-//                executeCommand(sshCmdPub);
-//                Thread.sleep(1000);
-//                
-//                //Push the script
-//                executeCommand(pushRecoveryScript);
-//                Thread.sleep(1000);
-//                
-//                //Reboot the device to start the install
-//                executeCommand(reboot);
-//                
-//            }
-//            catch(Exception e) 
-//            {
-//            	System.out.println("Error in executing commands on the tablet: " + e);
-//            } 
             
             //remove ssh keys from the file system
             util.removeAllWrittenFiles();
             
-            tabletInfo.addDevice(devices.get(i).split("\t")[0]);
-            System.out.println(label + "  has been completed.");
+            tabletInfo.addDevice(deviceSerialId);
+
+            System.out.println(tabletInfo.getTabletLabel() + "  has been completed.");
         }
     }
     
-    private static void determineConfigFile()
+    private static void getTabletLabelAndSequenceNumber()
     {
         TabletInformation tabletInfo = TabletInformation.getInstance();
         //Get the info from the user   
@@ -307,50 +270,138 @@ public class TabletInstallOperatingSystem {
 
         //If no input, set to default
         tabletInfo.setSequenceNumber(
-        tempUserInput.isEmpty() ? 1 : Integer.parseInt(tempUserInput));
+        		tempUserInput.isEmpty() ? 1 : Integer.parseInt(tempUserInput));
        
     }
     
-    private static void insertLabelInfoFile(String label)
+    private static void generateLabel(int deviceNumber, String deviceSerialId)
     {
-        String labelDirectory = "/sdcard/label.txt";
-        File file = new File("openrecoveryscript.unnamed");
-        if(!file.exists()) 
-        {
-            System.out.println("openrecoveryscript.unnamed doesn't exist!");
-        }
-        String line;
+    	
+    	TabletConfigDetails tabletConfig = TabletConfigDetails.getInstance();
+    	
+		String label = null;
+        System.out.println("Installing Image for: " + deviceSerialId);
         
-        try (BufferedReader br = new BufferedReader(new FileReader(file)))
+        //check if there is a pre-existing serial number/label in the DB that we need to use 
+        if(((label = server.checkForPreExistingLabel(deviceSerialId)).toString()).equals("0"))
         {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("openrecoveryscript")));
-            //Clear out the file
-            bw.write("");
-            String newLines = "\n";
-            while((line = br.readLine()) != null)
-            {
-                if(line.contains("--"))
-                {
-                    line = "cmd echo -e \"" + label + "\" > " + labelDirectory;
-                    line += newLines;
-                    line += "print \"Setting up wirless\"";
-                    line += newLines;
-                    line += "cmd echo -e \'network={\\n\\tssid=\""+ ssid +"\"\\n\\tpsk=\"" + networkPassword + "\"\\n\\tkey_mgmt=WPA-PSK\\n\\tpriority=2\\n}\' >> /data/misc/wifi/wpa_supplicant.conf";
-                }
-                if(line.contains("***ssid***"))
-        		{
-                	line += ssid + "\n";
-        		}
-                if(line.contains("***psk***"))
-                {
-                	line += networkPassword + "\n";
-                }
-                		
-                bw.append(line + "\n");
-            }
-            bw.flush();
+        	//Generate the label
+            label = tabletInfo.getTabletLabel() + "-" + tabletInfo.getSequenceNumber();
+            
+            //increment the sequence by one for the next iteration
+            tabletInfo.incrementSequenceNumber();
+            
+            //Send the serialId to label relationship
+            server.setLabel(label, deviceSerialId);
         }
-        catch (IOException e) {}
+        
+        tabletInfo.setTabletLabel(label);
+        
+        //Add the label to the config file
+        new Util().writeToFile("label.txt", label);
+        tabletConfig.insertLabelInfoFile(label);
+    }
+    
+    private static void loadRPConfig()
+    {
+    	//TODO Load the preset wireless settings for the Raspberry Pi
+    }
+   
+    private static int getNumberOfDevices()
+    {
+    	int numberOfDevices = 0;
+    	List<String> ipAddresses;
+    	
+    	if(TabletConfigDetails.getInstance().getTabletOption().getAdbWireless())
+    	{
+    		ipAddresses = getIpAddresses();
+    	
+    		//Connect to the wireless addresses
+    		for(String ipAddress : ipAddresses)
+    		{
+				executeCommand("adb connect " + ipAddress);	
+    		}
+    	}
+    	
+    	try 
+        {
+        	String line;
+        	
+        	BufferedReader reader = executeCommand(" adb devices");
+            
+        	//Skip the first line
+            reader.readLine();
+            while((line = reader.readLine()) != null) 
+            { 
+                if(line.length() > 0)
+                {
+                    numberOfDevices++;
+                    devices.add(line);
+                    System.out.println(line);
+                }
+            }
+            //remove the empty line from the count
+            //numberOfDevices--;
+            if(numberOfDevices == -1)
+            	numberOfDevices = 0;
+        }
+        catch(IOException e1) 
+        {
+            System.out.println("Exception: " + e1);
+        } 
+    	
+    	return numberOfDevices;
+    }
+    
+    private static List<String> getIpAddresses()
+    {
+    	List<String> ipAddresses = new LinkedList<String>();
+    	
+		System.out.println("Please enter the IP address of the tabet in the "
+				+ "form of xxx.xxx.xxx.xxx and then hit Enter\n"
+				+ "When finished, do not enter any input and hit enter");
+		
+		String userInput = "";
+		while((userInput = readUserInput()) != "")
+		{
+			if(Util.validateIp(userInput))
+			{
+				ipAddresses.add(userInput);
+				System.out.println("Address Saved.\n"
+						+ "Please enter the next address");
+			}
+			else
+				System.out.println("That is not a valid IP address");
+		}
+		
+		return ipAddresses;
+    }
+    
+    private static String readSerialId(int deviceNumber)
+    {
+		String getSerialId = " shell \"cat /sys/class/android_usb/android0/iSerial\"";
+    	
+    	String deviceSerialId;
+    	
+    	if(!TabletConfigDetails.getInstance().getTabletOption().getAdbWireless())
+    	{
+    		deviceSerialId = devices.get(deviceNumber).split("\t")[0] + " ";
+    		if(deviceSerialId.contains(":5555"))
+    		{
+    			System.out.println("The devices is wireless but it is not configured this way!\n"
+    					+ "Trying to resolve Serial Number over wireless network...");
+    			deviceSerialId = readCommandResponse(executeCommand("adb -s " + deviceSerialId + getSerialId)).trim();
+    			
+    			System.out.println("The Serial Number that was resolved is: " + deviceSerialId);
+    		}
+    	}
+    	else
+    	{
+    		String ipAddress = devices.get(deviceNumber).split("\t")[0] + " ";
+    		deviceSerialId = readCommandResponse(executeCommand("adb -s " + ipAddress + getSerialId)).trim();
+    	}
+    	
+    	return deviceSerialId;
     }
     
     private static String readUserInput()
@@ -393,19 +444,42 @@ public class TabletInstallOperatingSystem {
         return tempHashMap;
     }
     
-    private static void executeCommand(String command) throws Exception
+    private static BufferedReader executeCommand(String command)
     {
-    	String line;
     	command = cmd + command;
+    	BufferedReader reader = null;
     	
-        Process p = Runtime.getRuntime().exec(command); 
-        p.waitFor();
-        BufferedReader reader=new BufferedReader(
-            new InputStreamReader(p.getInputStream())
-        );
-        while((line = reader.readLine()) != null) 
-        	System.out.println(line);
+    	try 
+    	{
+	        Process p = Runtime.getRuntime().exec(command); 
+	        p.waitFor();
+	        reader =new BufferedReader(
+	            new InputStreamReader(p.getInputStream())
+	        );
+    	}
+    	catch (Exception e)
+    	{
+    		System.out.println("Exception when trying to execute command: " + e);
+    	}
+
+    	return reader;
+    }
+    
+    private static String readCommandResponse(BufferedReader executedCommand)
+    {
+    	String commandResponse = null;
+    	String line;
+    	try
+    	{
+    		while((line = executedCommand.readLine()) != null)
+    		commandResponse += "\n" + line;
+    	}
+    	catch(IOException e)
+    	{
+    		System.out.println("IO Exception when reading command response: " + e);
+    	}
     	
+    	return commandResponse;
     }
     
     private static void checkForPause()
@@ -414,3 +488,44 @@ public class TabletInstallOperatingSystem {
     	readUserInput();
     }
 }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

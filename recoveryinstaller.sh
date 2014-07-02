@@ -1,2 +1,2 @@
 su
-cat /sdcard/openrecoveryscript > /cache/recovery/openrecoveryscript 
+cat /sdcard/openrecoveryscript > /cache/recovery/openrecoveryscript

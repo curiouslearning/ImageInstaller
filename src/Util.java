@@ -25,12 +25,20 @@ THE SOFTWARE.
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
 
 	private static String MAC_OS = "MAC";
 	private static String WIN_OS = "WINDOWS";
 	private List<String> listOfFilesWrittenTo = new LinkedList<String>();
+	
+	private static final String PATTERN = 
+	        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 	
 	private String returnOS(){
 
@@ -82,6 +90,13 @@ public class Util {
 				System.out.println("Unable to delete file: " + file);
 		}
 		listOfFilesWrittenTo.clear();	
+	}
+	
+	public static boolean validateIp(final String ip){          
+
+	      Pattern pattern = Pattern.compile(PATTERN);
+	      Matcher matcher = pattern.matcher(ip);
+	      return matcher.matches();             
 	}
 	
 }
