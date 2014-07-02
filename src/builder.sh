@@ -2,11 +2,6 @@
 echo "Downloading most current image installer program..."
 cd ~/Documents/GitHub/ImageInstaller
 git pull
-cd /home/globallit/Documents/GitHub/ImageInstaller/
-cp .\openrecoveryscript* src
-cp *.txt src
-cp *.sh src
-cp *.json src
 cd /home/globallit/Documents/GitHub/ImageInstaller/src/
 echo "Building the program..."
 javac *.java
