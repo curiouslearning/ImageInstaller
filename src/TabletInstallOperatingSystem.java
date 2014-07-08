@@ -223,7 +223,6 @@ public class TabletInstallOperatingSystem {
 
         	for(String command : tabletConfig.getTabletOption().getInstallationCommands(deviceSerialId))
         	{
-        		System.out.println(command);
         		System.out.println(readCommandResponse(executeCommand(command)));
         		try { Thread.sleep(500);} catch(Exception e){}
         	}
