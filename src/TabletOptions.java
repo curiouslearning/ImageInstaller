@@ -59,8 +59,8 @@ public enum TabletOptions {
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
             commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
             commands.add(adbAndSerial + " push apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/");
-            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\"");
-            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash \"");
+            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh \"");
             commands.add(adbAndSerial + " reboot recovery");
             
             return commands;
