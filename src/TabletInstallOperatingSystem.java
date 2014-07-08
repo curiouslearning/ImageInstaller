@@ -252,7 +252,7 @@ public class TabletInstallOperatingSystem {
             
             tabletInfo.addDevice(deviceSerialId);
 
-            System.out.println(tabletInfo.getTabletLabel() + "  has been completed.");
+            System.out.println(tabletInfo.getTabletLabel() + "-" + tabletInfo.getSequenceNumber() "  has been completed.");
         }
     }
     
