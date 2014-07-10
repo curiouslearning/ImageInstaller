@@ -183,6 +183,9 @@ public class TabletInstallOperatingSystem {
             String deviceSerialId = readSerialId(i);
             generateLabel(i, deviceSerialId);
             
+            String adbIdentifier = TabletConfigDetails.getInstance().getTabletOption().getAdbWireless() ? 
+            		getIpAddressAndPortNumber(i) : deviceSerialId;
+            
 //            serverStop = adb + " adb kill-server ";
 //            serverStart = adb + " adb start-server";
 //            root = adb + deviceSerialId + " root";
@@ -221,7 +224,7 @@ public class TabletInstallOperatingSystem {
 //            String[] listOfCommands = readFileIntoArray(new File(CommandFile));
             
 
-        	for(String command : tabletConfig.getTabletOption().getInstallationCommands(deviceSerialId))
+        	for(String command : tabletConfig.getTabletOption().getInstallationCommands(adbIdentifier))
         	{
         		System.out.println(readCommandResponse(executeCommand(command)));
         		try { Thread.sleep(500);} catch(Exception e){}
@@ -359,10 +362,10 @@ public class TabletInstallOperatingSystem {
     	
 		System.out.println("Please enter the IP address of the tabet in the "
 				+ "form of xxx.xxx.xxx.xxx and then hit Enter\n"
-				+ "When finished, do not enter any input and hit enter");
+				+ "After you have entered in all IP's that you want, type in 'exit' and hit 'Enter'");
 		
 		String userInput = "";
-		while((userInput = readUserInput()) != "")
+		while(!(userInput = readUserInput()).trim().toLowerCase().equals("exit"))
 		{
 			if(Util.validateIp(userInput))
 			{
@@ -397,11 +400,16 @@ public class TabletInstallOperatingSystem {
     	}
     	else
     	{
-    		String ipAddress = devices.get(deviceNumber).split("\t")[0] + " ";
-    		deviceSerialId = readCommandResponse(executeCommand("adb -s " + ipAddress + getSerialId)).trim();
+    		String ipAddress = getIpAddressAndPortNumber(deviceNumber);
+    		deviceSerialId = readCommandResponse(executeCommand("adb -s " + ipAddress.trim() + getSerialId)).trim();
     	}
     	
     	return deviceSerialId;
+    }
+    
+    private static String getIpAddressAndPortNumber(int deviceNumber)
+    {
+    	return (devices.get(deviceNumber).split("\t")[0] + " ");
     }
     
     private static String readUserInput()
@@ -465,13 +473,15 @@ public class TabletInstallOperatingSystem {
     	return reader;
     }
     
-    private static String readCommandResponse(BufferedReader executedCommand)
+    private static String readCommandResponse(BufferedReader reader)
     {
-    	String commandResponse = null;
+    	String commandResponse = "";
     	String line;
     	try
     	{
-    		while((line = executedCommand.readLine()) != null)
+    		commandResponse = reader.readLine();
+    		
+    		while((line = reader.readLine()) != null)
     		commandResponse += "\n" + line;
     	}
     	catch(IOException e)

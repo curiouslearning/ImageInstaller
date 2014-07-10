@@ -59,8 +59,16 @@ public enum TabletOptions {
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
             commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
             commands.add(adbAndSerial + " push apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/");
-            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
-            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");
+            if(new Util().isWindows()) 
+            {
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+            }
+            else
+            {
+            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
+	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
+            }
             commands.add(adbAndSerial + " reboot recovery");
             
             return commands;
@@ -139,8 +147,16 @@ public enum TabletOptions {
             commands.add(adbAndSerial + " push version.txt /sdcard/");
             commands.add(adbAndSerial + " push apps.json " + mentoringAppLocation);
             commands.add(adbAndSerial + " shell pm set-install-location 2");
-            commands.add(adbAndSerial + " shell \"su; mount -o rw,remount -t ext4 /system\"");
-            commands.add(adbAndSerial + " shell \"su; busybox nohup cat /mnt/external_sd/installer.sh | sh & > output.txt &\"");
+            if(new Util().isWindows()) 
+            {
+            	//commands.add(adbAndSerial + " shell \"su; mount -o rw,remount -t ext4 /system\"");
+	            commands.add(adbAndSerial + " shell \"busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &\"");
+			}
+            else
+            {
+	            //commands.add(adbAndSerial + " shell su; mount -o rw,remount -t ext4 /system");
+	            commands.add(adbAndSerial + " shell su; busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &");            	
+            }
             commands.add(adbAndSerial + " reboot");            
 			return commands;
 			
