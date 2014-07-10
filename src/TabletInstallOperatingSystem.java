@@ -382,7 +382,11 @@ public class TabletInstallOperatingSystem {
     
     private static String readSerialId(int deviceNumber)
     {
-		String getSerialId = " shell \"cat /sys/class/android_usb/android0/iSerial\"";
+    	String getSerialId;
+    	if(new Util().isWindows())
+    		getSerialId = " shell \"cat /sys/class/android_usb/android0/iSerial\"";
+    	else
+    		getSerialId = " shell cat /sys/class/android_usb/android0/iSerial";
     	
     	String deviceSerialId;
     	
