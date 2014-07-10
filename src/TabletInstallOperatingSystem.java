@@ -464,7 +464,8 @@ public class TabletInstallOperatingSystem {
     	try 
     	{
 	        Process p = Runtime.getRuntime().exec(command); 
-	        p.waitFor();
+	        //p.waitFor();
+		Thread.sleep(200);
 	        reader =new BufferedReader(
 	            new InputStreamReader(p.getInputStream())
 	        );

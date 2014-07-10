@@ -155,9 +155,8 @@ public enum TabletOptions {
             else
             {
 	            //commands.add(adbAndSerial + " shell su; mount -o rw,remount -t ext4 /system");
-	            commands.add(adbAndSerial + " shell su; busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &");            	
+	            commands.add(adbAndSerial + " shell busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &");            	
             }
-            commands.add(adbAndSerial + " reboot");            
 			return commands;
 			
 		}
