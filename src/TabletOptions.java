@@ -137,7 +137,7 @@ public enum TabletOptions {
 			adb = " adb -s ";
 			idRsaPublic = "id_rsa.pub";
             idRsaPrivate = "id_rsa";
-            mentoringAppLocation = "/mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files";
+            mentoringAppLocation = "/mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/";
             adbAndSerial = adb + deviceSerialId;
             			
             commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");

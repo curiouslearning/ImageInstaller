@@ -88,6 +88,9 @@ public class Util {
 		{
 			if(!new File(file).delete())
 				System.out.println("Unable to delete file: " + file);
+			
+			//For hidden files
+			new File("." + file).delete();
 		}
 		listOfFilesWrittenTo.clear();	
 	}

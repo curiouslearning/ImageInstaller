@@ -39,7 +39,7 @@ public class TabletInstallOperatingSystem {
     private static String cmd = "";
     private static List<String> devices = new LinkedList<>();
     private static TabletInformation tabletInfo = TabletInformation.getInstance();
-    private static String CommandFile = "adbCommandFile.txt";
+    private static String[] commandsToIgnore = {"busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh"};
         
     public static void main(String[] args) {
     	
@@ -186,12 +186,6 @@ public class TabletInstallOperatingSystem {
             String adbIdentifier = TabletConfigDetails.getInstance().getTabletOption().getAdbWireless() ? 
             		getIpAddressAndPortNumber(i) : deviceSerialId;
             
-//            serverStop = adb + " adb kill-server ";
-//            serverStart = adb + " adb start-server";
-//            root = adb + deviceSerialId + " root";
-            
-            //TODO make temp file and push to tablet
-            
             String[] SSHKeys = new String[2];
             try 
             {
@@ -230,26 +224,6 @@ public class TabletInstallOperatingSystem {
         		try { Thread.sleep(500);} catch(Exception e){}
         	}
         	
-        	
-//            	//push the ssh keys
-//            	executeCommand(sshDirectory);
-//            	executeCommand(sshCmdPri);
-//            	executeCommand(sshCmdPub);
-//            	
-//            	//Run a command file
-//            	executeCommand("./install.sh");
-//            	
-//            	
-//            	
-            //Run each command in the list with the serialID prepended 
-//	            for(String command : listOfCommands)
-//	            {
-//	            	executeCommand(adb + deviceSerialId + " " + command);
-//	            	Thread.sleep(1000);
-//	            }
-
-            
-            
             //remove ssh keys from the file system
             util.removeAllWrittenFiles();
             
@@ -405,7 +379,8 @@ public class TabletInstallOperatingSystem {
     	else
     	{
     		String ipAddress = getIpAddressAndPortNumber(deviceNumber);
-    		deviceSerialId = readCommandResponse(executeCommand("adb -s " + ipAddress.trim() + getSerialId)).trim();
+    		BufferedReader reader = executeCommand("adb -s " + ipAddress.trim() + getSerialId);
+    		deviceSerialId = readCommandResponse(reader);
     	}
     	
     	return deviceSerialId;
@@ -464,8 +439,11 @@ public class TabletInstallOperatingSystem {
     	try 
     	{
 	        Process p = Runtime.getRuntime().exec(command); 
-	        //p.waitFor();
-		Thread.sleep(200);
+	        Thread.sleep(1000);
+	        
+	        for(String cmd : commandsToIgnore)
+	        	if(cmd.contains(command))
+	        		return null;
 	        reader =new BufferedReader(
 	            new InputStreamReader(p.getInputStream())
 	        );
@@ -482,6 +460,8 @@ public class TabletInstallOperatingSystem {
     {
     	String commandResponse = "";
     	String line;
+    	if(reader == null)
+    		return "";
     	try
     	{
     		commandResponse = reader.readLine();
