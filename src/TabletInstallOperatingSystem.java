@@ -440,9 +440,10 @@ public class TabletInstallOperatingSystem {
     	{
 	        Process p = Runtime.getRuntime().exec(command); 
 	        Thread.sleep(1000);
-	        
+	       
+		//If the command is an installer command, it will not return for 20 minutes.  Skip. 
 	        for(String cmd : commandsToIgnore)
-	        	if(cmd.contains(command))
+	        	if(command.contains(cmd))
 	        		return null;
 	        reader =new BufferedReader(
 	            new InputStreamReader(p.getInputStream())
