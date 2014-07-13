@@ -1,5 +1,8 @@
 su
-mount -o re,remount -t ext4 /system
+mount -o remount,rw -t ext4 /system
+
+pm set-install-location 2
+
 pm install  /mnt/external_sd/swagapps/air.com.speakaboos.kidstime.the_abc_song-1.apk
 pm install  /mnt/external_sd/swagapps/BMA_CO.Phonics_Lv1_Unit10-1.apk
 pm install  /mnt/external_sd/swagapps/BMA_CO.Phonics_Lv1_Unit2-1.apk
@@ -46,5 +49,19 @@ pm install  /mnt/external_sd/swagapps/russh.toddler.colors-1.apk
 pm install  /mnt/external_sd/swagapps/russh.toddler.game-1.apk
 pm install  /mnt/external_sd/swagapps/russh.toddler.shapes-1.apk
 
-busybox cp /mnt/external_sd/swagapps/system/funfFileMover.apk /system/app
+pm set-install-location 1
+
+busybox cp /mnt/external_sd/swagapps/systemApps/funfFileMover.apk /system/app
+mkdir /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files
 busybox cp /mnt/external_sd/swagapps/apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files
+
+# Install the following apps
+pm install /mnt/external_sd/swagapps/com.morrison.applocklite-1.apk
+pm install /mnt/external_sd/swagapps/com.morrison.processmanager.applock-1.apk
+
+# After install, move the data files to their respective locations
+busybox cp -r /mnt/external_sd/swagapps/data/com.morrison.applocklite /data/data/
+busybox cp -r /mnt/external_sd/swagapps/data/com.morrison.processmanager.applock /data/data/
+
+# Reboot to complete install
+reboot
