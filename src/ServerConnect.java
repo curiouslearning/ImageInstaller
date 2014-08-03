@@ -30,10 +30,12 @@ import java.util.Map;
 public class ServerConnect {
     
     private static String username, password;
-    private static String sshKeysURL = "http://git.globallit.org/GenerateKeys.php";    
-    private static String checkCredentialsURL = "http://git.globallit.org/checkCredentials.php";
-    private static String checkLabelURL = "http://git.globallit.org/checkLabel.php";
-    private static String updateLabelURL = "http://git.globallit.org/updateLabel.php";
+    private static int userCredentialKey;
+    private static String baseURL = "http://developer.globallit.org/";
+    private static String sshKeysURL = baseURL + "imageinstaller/GenerateKeys.php";    
+    private static String checkCredentialsURL = baseURL + "imageinstaller/checkCredentials.php";
+    private static String checkLabelURL = baseURL + "imageinstaller/checkLabel.php";
+    private static String updateLabelURL = baseURL + "imageinstaller/updateLabel.php";
     
     public void setUsername(String username)
     {
@@ -44,6 +46,12 @@ public class ServerConnect {
     {
         this.password = password;
     }
+    
+    public int getUserCredentialKey()
+    {
+    	return this.userCredentialKey;
+    }
+
     
     public String[] getSSHKeys(String username, String password, String serialId)
     {
@@ -86,9 +94,13 @@ public class ServerConnect {
             params.put("password", passwd);
 
             String postResponse = new DataTransfer().postData(url, params);
-            
-            return Boolean.valueOf(postResponse);
-                
+            if(Integer.parseInt(postResponse) > 0)
+            {
+	            this.userCredentialKey = Integer.parseInt(postResponse.toString());
+	            return true; 
+            }   
+            else 
+            	return false;
         }
         catch(Exception e) {
             System.out.println("Exception in checkCredentials: " + e);
@@ -125,6 +137,9 @@ public class ServerConnect {
             Map<String,Object> params = new LinkedHashMap<>();
             params.put("label", label);
             params.put("serialId", serialId);
+            params.put("userId", this.userCredentialKey);
+            params.put("tabletOption", TabletConfigDetails.getInstance().getTabletOption());
+            params.put("usingRaspberryPi", TabletConfigDetails.getInstance().getIsUsingPi());
             
             return new DataTransfer().postData(url, params);
         }

@@ -33,6 +33,7 @@ public class TabletConfigDetails {
 	
 	private String ssid, networkPassword;
 	private TabletOptions tabletOption;
+	private boolean usingRaspberryPi;
 	private boolean IsWireless;
 	
 	public static TabletConfigDetails tabletConfig = null;
@@ -118,4 +119,41 @@ public class TabletConfigDetails {
 	{
 		this.IsWireless = isWireless;
 	}
+	public void setIsUsingPi(boolean value)
+	{
+		this.usingRaspberryPi = value;
+	}
+	
+	public boolean getIsUsingPi()
+	{
+		return this.usingRaspberryPi;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

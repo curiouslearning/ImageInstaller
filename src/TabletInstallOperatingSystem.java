@@ -34,6 +34,7 @@ import java.util.List;
 
 
 public class TabletInstallOperatingSystem {
+	private static boolean TEST = true;
     private static String username, password;
     private static ServerConnect server;
     private static String cmd = "";
@@ -42,6 +43,12 @@ public class TabletInstallOperatingSystem {
     private static String[] commandsToIgnore = {"busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh"};
         
     public static void main(String[] args) {
+    	
+    	if(TEST)
+    	{
+    		new Test();
+    		return;
+    	}
     	
     	Util util = new Util();
     	
@@ -100,9 +107,15 @@ public class TabletInstallOperatingSystem {
         System.out.println("Will you be using a Raspberry Pi with this setup? Y or N \n"
         		+ "(If you are unsure, you prpbably arent)");
         if(readUserInput().toUpperCase().equals("y"))
+        {
         	loadRPConfig();
+        	TabletConfigDetails.getInstance().setIsUsingPi(true);
+        }
         else
+        {
         	getNetworkInformation();
+        	TabletConfigDetails.getInstance().setIsUsingPi(false);
+        }
         
 //        File serialLabelMappingFile = new File("serialToLabelMapping.txt");
 //        //Check if there is a file in our directory for versioning information
