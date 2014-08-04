@@ -134,6 +134,7 @@ public class ServerConnect {
     {
     	try {
             URL url = new URL(this.updateLabelURL);
+            System.out.println(url);
             Map<String,Object> params = new LinkedHashMap<>();
             params.put("label", label);
             params.put("serialId", serialId);

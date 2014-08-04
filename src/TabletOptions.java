@@ -90,7 +90,34 @@ public enum TabletOptions {
 		{
 			List<String> commands = new LinkedList<String>();
 			
-			//TODO fill in logic
+String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
+			
+			adb = " adb -s ";
+			idRsaPublic = "id_rsa.pub";
+            idRsaPrivate = "id_rsa";
+            adbAndSerial = adb + deviceSerialId;
+			
+            commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push label.txt /sdcard/");
+            commands.add(adbAndSerial + " push version.txt /sdcard/");
+            commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
+            commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
+            commands.add(adbAndSerial + " push apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/");
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+
+            if(new Util().isWindows()) 
+            {
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+            }
+            else
+            {
+            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
+	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
+            }
+            commands.add(adbAndSerial + " reboot recovery");
 			
 			return commands;
 		}

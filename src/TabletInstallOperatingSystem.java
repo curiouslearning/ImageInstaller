@@ -34,7 +34,7 @@ import java.util.List;
 
 
 public class TabletInstallOperatingSystem {
-	private static boolean TEST = true;
+	private static boolean TEST = false;
     private static String username, password;
     private static ServerConnect server;
     private static String cmd = "";
