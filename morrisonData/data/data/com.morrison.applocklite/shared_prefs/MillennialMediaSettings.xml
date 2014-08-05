@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+<long name="handshake_deferredviewtimeout" value="3600000" />
+<long name="handshake_callback" value="86400000" />
+<long name="handshake_creativecaetimeout" value="259200000" />
+<string name="handshake_schemes">testscheme1	1
+mmadvertiserapp	2
+mmadvertiserapp	3
+knoreader	6
+ebay	7
+nflx	8
+sbux	9
+logmein	11
+serve	12
+serve	13
+snaptax	14
+fb2389801228poker	15
+flickr	17
+fb333917559972367	16
+watchespn	19
+watchespn	18
+itms-books	21
+aetvplus	20
+ibooks	23
+itms-bookss	22
+ddc	25
+ddc	24
+gametime	27
+gametime	26
+candycrush	29
+abcfamilyplayer	28
+directv	31
+candycrush	30
+flaluckylotto	34
+krogerapp	35
+directv	32
+flaluckylotto	33
+abcplayer	38
+golfnow	39
+krogerapp	36
+abcplayer	37
+remax	42
+googleapp	43
+golfnow	40
+remax	41
+syfytve	46
+googlechrome	47
+googleapp	44
+syfytve	45
+retailmenot://view/home	51
+retailmenot://view/home	50
+googlechrome	49
+abcfamilyplayer	48
+wlgrn	53
+wlgrn	52</string>
+<boolean name="handshake_hdid" value="true" />
+<long name="handshake_lasthandshake" value="1407095245059" />
+<boolean name="handshake_kill" value="false" />
+</map>

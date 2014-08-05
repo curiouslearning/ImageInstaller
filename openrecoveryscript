@@ -1,16 +1,10 @@
-print "Starting wipe..."
-wipe cache
-wipe dalvik
-
 print "Restoring..."
 restore /external_sd/tabimage
 
 print "Customizing..."
-cmd mkdir /sdcard/.ssh
-cmd cp /sdcard/apps.json  /sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/apps.json
-cmd echo -e "TestAug03-03-1" > /sdcard/label.txt
+cmd echo -e "SecondInstallAttempt!-1" > /sdcard/label.txt
 print "Setting up wirless"
-cmd echo -e 'network={\n\tssid="null"\n\tpsk="null"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
+cmd echo -e 'network={\n\tssid="GlobalLit"\n\tpsk="readingisawesomse"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
 cmd echo -e "1.0.0_tab3lite" > /sdcard/version.txt
 cmd sleep 15
 print "Done!"

@@ -1,13 +1,7 @@
-print "Starting wipe..."
-wipe cache
-wipe dalvik
-
 print "Restoring..."
 restore /external_sd/tabimage
 
 print "Customizing..."
-cmd mkdir /sdcard/.ssh
-cmd cp /sdcard/apps.json  /sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/apps.json
 --
 cmd echo -e "1.0.0_tab3lite" > /sdcard/version.txt
 cmd sleep 15

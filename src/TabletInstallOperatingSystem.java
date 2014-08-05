@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class TabletInstallOperatingSystem {
@@ -40,7 +41,7 @@ public class TabletInstallOperatingSystem {
     private static String cmd = "";
     private static List<String> devices = new LinkedList<>();
     private static TabletInformation tabletInfo = TabletInformation.getInstance();
-    private static String[] commandsToIgnore = {"busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh"};
+    private static String[] commandsToIgnore = {"busybox nohup cat /sdcard/RoanokeInstaller.sh"};
         
     public static void main(String[] args) {
     	
@@ -233,7 +234,13 @@ public class TabletInstallOperatingSystem {
 
         	for(String command : tabletConfig.getTabletOption().getInstallationCommands(adbIdentifier))
         	{
-        		System.out.println(readCommandResponse(executeCommand(command)));
+        		if(command.contains("~~special~~"))
+        		{
+        			runAppLockInstaller(command);
+        			continue;
+        		}
+        		
+    			System.out.println(readCommandResponse(executeCommand(command)));
         		try { Thread.sleep(500);} catch(Exception e){}
         	}
         	
@@ -244,6 +251,48 @@ public class TabletInstallOperatingSystem {
 
             System.out.println(tabletInfo.getTabletLabel() + "-" + tabletInfo.getSequenceNumber() + "  has been completed.");
         }
+    }
+    
+    private static void runAppLockInstaller(String command)
+    {
+    	String adbAndSerial = command.split("\\|")[1];
+    	//Get the user info for com.morrison.applocklite
+    	String execute = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
+    	
+    	String result = readCommandResponse(executeCommand(execute));
+    	
+    	String userIdOfMorrison = result.split(" ")[1];
+
+    	try{
+    	
+    		String content = new Scanner(new File("morrisonInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison);
+    		Util util = new Util();
+    		util.writeToFile("morrisonInstallerComplete.sh", content);
+    		executeCommand(adbAndSerial + " push morrisonInstallerComplete.sh /sdcard/");
+    		executeCommand(adbAndSerial + "shell \"cat /sdcard/morrisonInstallerComplete.sh | sh\"");
+    	}
+    	catch(IOException e){System.out.println("Error Reading morrisonInstaller File" + e);}
+    }
+    
+    private static void runCondiInstaller(String command)
+    {
+    	String adbAndSerial = command.split("\\|")[1];
+    	//Get the user info for com.morrison.applocklite
+    	String execute = adbAndSerial + " shell \"cat /sdcard/condiOutput.txt\"";
+    	
+    	String result = readCommandResponse(executeCommand(execute));
+    	
+    	String userIdOfMorrison = result.split(" ")[1];
+
+    	try{
+    	
+    		String content = new Scanner(new File("condiInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison);
+    		Util util = new Util();
+    		util.writeToFile("condiInstallerComplete.sh", content);
+    		executeCommand(adbAndSerial + " push condiInstallerComplete.sh /sdcard/");
+    		executeCommand(adbAndSerial + "shell \"cat /sdcard/condiInstallerComplete.sh | sh\"");
+    	}
+    	catch(IOException e){System.out.println("Error Reading condiInstaller File" + e);}
     }
     
     private static void getTabletLabelAndSequenceNumber()

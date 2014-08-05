@@ -58,7 +58,8 @@ public enum TabletOptions {
             commands.add(adbAndSerial + " push version.txt /sdcard/");
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
             commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
-            commands.add(adbAndSerial + " push apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/");
+            commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
             if(new Util().isWindows()) 
             {
 	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
@@ -69,7 +70,7 @@ public enum TabletOptions {
             	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
 	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
             }
-            commands.add(adbAndSerial + " reboot recovery");
+            //commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
             
             return commands;
 		}
@@ -103,21 +104,34 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push label.txt /sdcard/");
             commands.add(adbAndSerial + " push version.txt /sdcard/");
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
-            commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
-            commands.add(adbAndSerial + " push apps.json /mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/files/");
+            commands.add(adbAndSerial + " push RoanokeInstaller.sh /sdcard/");
+            commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
+            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
+            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
+            commands.add(adbAndSerial + " push catdata.sh /sdcard/");
+            commands.add(adbAndSerial + " push simpleRecoveryScript.sh /sdcard/");
+            commands.add(adbAndSerial + " shell \"cat /sdcard/simpleRecoveryScript.sh | sh\"");
+            
+            if(new Util().isWindows()) 
+            	commands.add(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh\"");
+            else
+            	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
+            
             commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            commands.add("~~special~~|" + adbAndSerial);
+            commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
 
             if(new Util().isWindows()) 
             {
-	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
-	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh\"");
             }
             else
             {
-            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
-	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
+            	commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash \" ");
+	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh \" ");	
             }
-            commands.add(adbAndSerial + " reboot recovery");
+            //commands.add(adbAndSerial + " reboot recovery");
 			
 			return commands;
 		}
