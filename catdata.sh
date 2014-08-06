@@ -1,2 +1,3 @@
 su
-ls -l /data/data/com.morrison.applocklite > /sdcard/dataOutput.txt
+ls -l /data/data/ > /sdcard/dataOutput.txt
+cat /sdcard/tempWpa.txt >> /data/misc/wifi/wpa_supplicant.conf

@@ -89,6 +89,14 @@ public class TabletConfigDetails {
         }
         catch (IOException e) {}
     }
+	
+	public String swagGetWiressInfo()
+	{
+		String tempWpa = "network={\n\tssid=\"" +  ssid + "\"\n\tpsk=\""+ networkPassword + "\"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}";
+		
+	
+		return tempWpa;
+	}
 
 	public void setTabletOption(TabletOptions tabletOption)
 	{

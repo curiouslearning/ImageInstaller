@@ -171,9 +171,11 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
 		@Override
 		public List<String> getInstallationCommands(String deviceSerialId)
 		{
+			TabletConfigDetails configDetails = TabletConfigDetails.getInstance(); 
 			List<String> commands = new LinkedList<String>();
 
 			String idRsaPublic, idRsaPrivate, adb, adbAndSerial, mentoringAppLocation;
+			String swagInstaller = "swag101Installer.sh";
 			
 			adb = " adb -s ";
 			idRsaPublic = "id_rsa.pub";
@@ -183,20 +185,36 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             			
             commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
             commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + swagInstaller + " /sdcard/");
             commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
             commands.add(adbAndSerial + " push label.txt /sdcard/");
             commands.add(adbAndSerial + " push version.txt /sdcard/");
-            commands.add(adbAndSerial + " push apps.json " + mentoringAppLocation);
+            commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
+            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
+            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
+            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/databases\"");
+            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/shared_prefs\"");
+            commands.add(adbAndSerial + " push catdata.sh /sdcard/");
             commands.add(adbAndSerial + " shell pm set-install-location 2");
+            commands.add(adbAndSerial + " push tempWpa.txt /sdcard/");
+
+            if(new Util().isWindows()) 
+            	commands.add(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh\"");
+            else
+            	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
+            
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            commands.add("~~special~~|" + adbAndSerial);  //For copying appLock config files over under the correct user
+            
             if(new Util().isWindows()) 
             {
             	//commands.add(adbAndSerial + " shell \"su; mount -o rw,remount -t ext4 /system\"");
-	            commands.add(adbAndSerial + " shell \"busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &\"");
+	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/" + swagInstaller + " | sh & > output.txt &\"");
 			}
             else
             {
 	            //commands.add(adbAndSerial + " shell su; mount -o rw,remount -t ext4 /system");
-	            commands.add(adbAndSerial + " shell busybox nohup cat /mnt/external_sd/swagapps/swagInstaller.sh | sh & > output.txt &");            	
+	            commands.add(adbAndSerial + " shell busybox nohup cat /sdcard/" + swagInstaller + " | sh & > output.txt &");            	
             }
 			return commands;
 			

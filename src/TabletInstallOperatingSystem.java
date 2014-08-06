@@ -85,6 +85,7 @@ public class TabletInstallOperatingSystem {
                 break;
             }
         }
+
         int tabletOption;
         while(true)
         {
@@ -191,6 +192,7 @@ public class TabletInstallOperatingSystem {
         //Loop over all discovered devices
         for(int i = 0; i < devices.size(); i++)
         {
+        	
             if(tabletInfo.checkIfPresent(readSerialId(i)))
             	continue;
             
@@ -214,6 +216,7 @@ public class TabletInstallOperatingSystem {
             Util util = new Util();
             util.writeToFile(idRsaPublic, SSHKeys[0]);
             util.writeToFile(idRsaPrivate, SSHKeys[1]);
+            util.writeToFile("tempWpa.txt", TabletConfigDetails.getInstance().swagGetWiressInfo());
             
             
 //            adb = " adb -s ";
@@ -240,6 +243,7 @@ public class TabletInstallOperatingSystem {
         			continue;
         		}
         		
+        		
     			System.out.println(readCommandResponse(executeCommand(command)));
         		try { Thread.sleep(500);} catch(Exception e){}
         	}
@@ -259,9 +263,17 @@ public class TabletInstallOperatingSystem {
     	//Get the user info for com.morrison.applocklite
     	String execute = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
     	
-    	String result = readCommandResponse(executeCommand(execute));
-    	
-    	String userIdOfMorrison = result.split(" ")[1];
+    	String[] resultSet = readCommandResponse(executeCommand(execute)).split("\n");
+    	String morrisonString = "";
+    	for(String result : resultSet)
+    	{
+    		if(result.contains("com.morrison.applocklite"))
+    		{
+				morrisonString = result;
+				break;
+    		}
+    	}
+    	String userIdOfMorrison = morrisonString.split(" ")[1];
 
     	try{
     	
@@ -398,10 +410,10 @@ public class TabletInstallOperatingSystem {
     	
 		System.out.println("Please enter the IP address of the tabet in the "
 				+ "form of xxx.xxx.xxx.xxx and then hit Enter\n"
-				+ "After you have entered in all IP's that you want, type in 'exit' and hit 'Enter'");
+				+ "After you have entered in all IP's that you want, type in 'done' and hit 'Enter'");
 		
 		String userInput = "";
-		while(!(userInput = readUserInput()).trim().toLowerCase().equals("exit"))
+		while(!(userInput = readUserInput()).trim().toLowerCase().equals("done"))
 		{
 			if(Util.validateIp(userInput))
 			{

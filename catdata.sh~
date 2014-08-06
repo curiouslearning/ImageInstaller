@@ -1,0 +1,3 @@
+su
+ls -l /data/data/com.morrison.applocklite > /sdcard/dataOutput.txt
+ls -l /data/data/
