@@ -45,6 +45,11 @@ public class TabletInstallOperatingSystem {
         
     public static void main(String[] args) {
     	
+    	if(TEST)
+    	{
+    		new Test();
+    		return;
+    	}
     	
     	Util util = new Util();
     	
