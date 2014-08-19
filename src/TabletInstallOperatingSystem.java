@@ -232,6 +232,7 @@ public class TabletInstallOperatingSystem {
 
         	for(String command : tabletConfig.getTabletOption().getInstallationCommands(adbIdentifier))
         	{
+        		System.out.println("Command: " + command);
         		if(command.contains("~~appLockInstaller~~"))
         		{
         			runAppLockInstaller(command);
