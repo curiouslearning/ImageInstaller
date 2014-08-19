@@ -232,12 +232,15 @@ public class TabletInstallOperatingSystem {
 
         	for(String command : tabletConfig.getTabletOption().getInstallationCommands(adbIdentifier))
         	{
-        		if(command.contains("~~special~~"))
+        		if(command.contains("~~appLockInstaller~~"))
         		{
         			runAppLockInstaller(command);
         			continue;
         		}
-        		
+        		else if(command.contains("~~OtherSpecialInstaller~~"))
+				{
+        			continue;
+				}
         		
     			System.out.println(readCommandResponse(executeCommand(command)));
         		try { Thread.sleep(500);} catch(Exception e){}

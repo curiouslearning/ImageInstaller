@@ -118,7 +118,9 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
             
             commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
-            commands.add("~~special~~|" + adbAndSerial);
+            //Applock instructions
+            commands.add("~~appLockInstaller~~|" + adbAndSerial);
+            //Condi app?
             commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
 
             if(new Util().isWindows()) 
