@@ -1,10 +1,10 @@
 print "Restoring..."
-restore /external_sd/tabimage
+restore /sdcard/tabimage
 
 print "Customizing..."
-cmd echo -e "test103-1" > /sdcard/label.txt
+cmd echo -e "RO-277" > /sdcard/label.txt
 print "Setting up wirless"
-cmd echo -e 'network={\n\tssid="foobarbaz"\n\tpsk="testtest"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
+cmd echo -e 'network={\n\tssid="null"\n\tpsk="null"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
 cmd echo -e "1.0.0_tab3lite" > /sdcard/version.txt
 cmd sleep 15
 print "Done!"

@@ -1,14 +1,5 @@
 {
 "apps": [
-		{"file":"com.SightCards","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"air.com.uxpractitioners.apps.phonicsreaderLite","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"kr.co.smartstudy.phonicsiap_android_googlemarket","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"com.learningtouch.bobbooksliteversion","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"com.lostlarry","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"emantras.in","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"com.scholastic.CliffordsBIGBirthday","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"com.absolutist.abcmysteriezfree","title":"","type":"app","bounce":1,"scale":1},
-		{"file":"uk.co.readwritephonics","title":"","type":"app","bounce":1,"scale":1},
 		{"file":"russh.toddler.game","title":"","type":"app","bounce":1,"scale":1},
 		{"file":"russh.toddler.colors","title":"","type":"app","bounce":1,"scale":1},
         {"file":"russh.toddler.shapes","title":"","type":"app","bounce":1,"scale":1},
@@ -51,6 +42,14 @@
 		{"file":"BMA_CO.Phonics_Lv3_Unit5","title":"","type":"app","bounce":1,"scale":1},
 		{"file":"BMA_CO.Phonics_Lv3_Unit7","title":"","type":"app","bounce":1,"scale":1},
 		{"file":"BMA_CO.Phonics_Lv3_Unit10","title":"","type":"app","bounce":1,"scale":1},
-
+		{"file":"com.SightCards","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"air.com.uxpractitioners.apps.phonicsreaderLite","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"kr.co.smartstudy.phonicsiap_android_googlemarket","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"com.learningtouch.bobbooksliteversion","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"com.lostlarry","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"emantras.in","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"com.scholastic.CliffordsBIGBirthday","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"com.absolutist.abcmysteriezfree","title":"","type":"app","bounce":1,"scale":1},
+		{"file":"uk.co.readwritephonics","title":"","type":"app","bounce":1,"scale":1},
                 ]
 }
