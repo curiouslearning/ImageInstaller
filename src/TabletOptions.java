@@ -256,7 +256,7 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
             
             commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
-            commands.add("~~special~~|" + adbAndSerial);  //For copying appLock config files over under the correct user
+            commands.add("~~appLockInstaller~~|" + adbAndSerial);  //For copying appLock config files over under the correct user
             
             if(new Util().isWindows()) 
             {

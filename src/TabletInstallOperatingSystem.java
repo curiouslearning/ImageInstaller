@@ -41,7 +41,7 @@ public class TabletInstallOperatingSystem {
     private static String cmd = "";
     private static List<String> devices = new LinkedList<>();
     private static TabletInformation tabletInfo = TabletInformation.getInstance();
-    private static String[] commandsToIgnore = {"busybox nohup cat /sdcard/RoanokeInstaller.sh"};
+    private static String[] commandsToIgnore = {"busybox nohup"};
         
     public static void main(String[] args) {
     	

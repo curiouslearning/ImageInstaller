@@ -1,4 +1,4 @@
-
+su 
 #Applocklite Databases
 mkdir /data/data/com.morrison.applocklite/databases
 busybox cp -r /mnt/sdcard/external_sd/swagapps/data/com.morrison.applocklite/databases/applock.db /data/data/com.morrison.applocklite/databases/
