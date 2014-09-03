@@ -179,6 +179,7 @@ public class TabletInstallOperatingSystem {
     
     private static void processTablets(HashMap<String, String> serialToLabelMapping)
     {
+    	System.out.println("Getting number of devices");
         int numberOfDevices = getNumberOfDevices();
         TabletConfigDetails tabletConfig = TabletConfigDetails.getInstance();
         
