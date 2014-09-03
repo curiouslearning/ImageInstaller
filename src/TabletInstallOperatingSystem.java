@@ -263,32 +263,33 @@ public class TabletInstallOperatingSystem {
     
     private static void runAppLockInstaller(String command)
     {
-    	String adbAndSerial = command.split("\\|")[1];
-    	//Get the user info for com.morrison.applocklite
-    	String execute = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
-    	
-    	String[] resultSet = readCommandResponse(executeCommand(execute)).split("\n");
-    	String morrisonString = "";
-    	for(String result : resultSet)
-    	{
-    		if(result.contains("com.morrison.applocklite"))
-    		{
-				morrisonString = result;
-				break;
-    		}
-    	}
-    	System.out.println("morrisonString: " + morrisonString);
-    	String userIdOfMorrison = morrisonString.split(" ")[1];
-
-    	try{
-    	
-    		String content = new Scanner(new File("morrisonInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison);
-    		Util util = new Util();
-    		util.writeToFile("morrisonInstallerComplete.sh", content);
-    		executeCommand(adbAndSerial + " push morrisonInstallerComplete.sh /sdcard/");
-    		executeCommand(adbAndSerial + "shell \"cat /sdcard/morrisonInstallerComplete.sh | sh\"");
-    	}
-    	catch(IOException e){System.out.println("Error Reading morrisonInstaller File" + e);}
+    	return;
+//    	String adbAndSerial = command.split("\\|")[1];
+//    	//Get the user info for com.morrison.applocklite
+//    	String execute = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
+//    	
+//    	String[] resultSet = readCommandResponse(executeCommand(execute)).split("\n");
+//    	String morrisonString = "";
+//    	for(String result : resultSet)
+//    	{
+//    		if(result.contains("com.morrison.applocklite"))
+//    		{
+//				morrisonString = result;
+//				break;
+//    		}
+//    	}
+//    	System.out.println("morrisonString: " + morrisonString);
+//    	String userIdOfMorrison = morrisonString.split(" ")[1];
+//
+//    	try{
+//    	
+//    		String content = new Scanner(new File("morrisonInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison);
+//    		Util util = new Util();
+//    		util.writeToFile("morrisonInstallerComplete.sh", content);
+//    		executeCommand(adbAndSerial + " push morrisonInstallerComplete.sh /sdcard/");
+//    		executeCommand(adbAndSerial + "shell \"cat /sdcard/morrisonInstallerComplete.sh | sh\"");
+//    	}
+//    	catch(IOException e){System.out.println("Error Reading morrisonInstaller File" + e);}
     }
     
     private static void runCondiInstaller(String command)
