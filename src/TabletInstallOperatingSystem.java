@@ -188,7 +188,7 @@ public class TabletInstallOperatingSystem {
         //Loop over all discovered devices
         for(int i = 0; i < devices.size(); i++)
         {
-        	
+        	System.out.println("Reading the serial ID");
             if(tabletInfo.checkIfPresent(readSerialId(i)))
             	continue;
             
