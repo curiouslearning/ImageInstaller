@@ -277,6 +277,7 @@ public class TabletInstallOperatingSystem {
 				break;
     		}
     	}
+    	System.out.println("morrisonString: " + morrisonString);
     	String userIdOfMorrison = morrisonString.split(" ")[1];
 
     	try{
