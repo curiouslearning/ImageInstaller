@@ -192,17 +192,21 @@ public class TabletInstallOperatingSystem {
             	continue;
             
             String deviceSerialId = readSerialId(i);
+            System.out.println("Generating/saving Label");
             generateLabel(i, deviceSerialId);
+            System.out.println("Done Generating Label");
             
             String adbIdentifier = TabletConfigDetails.getInstance().getTabletOption().getAdbWireless() ? 
             		getIpAddressAndPortNumber(i) : deviceSerialId;
             
             String[] SSHKeys = new String[2];
+            System.out.println("Getting SSH Keys");
             try 
             {
             	SSHKeys = server.getSSHKeys(deviceSerialId);
             }
             catch (Exception e) {}
+            System.out.println("Done getting SSH Keys");
             
             String idRsaPublic, idRsaPrivate;
             idRsaPublic = "id_rsa.pub";
