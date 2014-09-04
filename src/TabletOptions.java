@@ -241,6 +241,10 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
 			commands.add(adbAndSerial + " push label.txt /sdcard/");
             commands.add(adbAndSerial + " push version.txt /sdcard/");
+            commands.add("dos2unix installAppLock.sh");
+            commands.add(adbAndSerial + " push installAppLock.sh /sdcard/");
+            commands.add(adbAndSerial + " shell \"cat /sdcard/installAppLock.sh | sh\"");
+            
             commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
             commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
             commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");

@@ -48,6 +48,10 @@ public class TabletInstallOperatingSystem {
     	
     	Util util = new Util();
     	
+    	//restart the server
+       executeCommand("adb kill-server");
+       executeCommand("adb start-server");
+    	
     	if(util.isWindows())
     		cmd = "cmd /c ";
         
