@@ -55,7 +55,7 @@ pm install -s /mnt/external_sd/swagApps/uk.co.readwritephonics-1.apk
 
 pm set-install-location 0
 pm install -f /mnt/external_sd/swagApps/funfFileMover.apk
-pm install -f /mnt/external_sd/swagApps/edu.media.mit.prg.launcher.apk
+pm install -f /mnt/external_sd/swagApps/edu.media.mit.prg.launcher-1.apk
 
 su
 mount -o remount,rw -t ext4 /system
