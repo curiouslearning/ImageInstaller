@@ -234,7 +234,8 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             idRsaPrivate = "id_rsa";
             mentoringAppLocation = "/mnt/sdcard/Android/data/edu.mit.media.prg.mentoring_app/";
             adbAndSerial = adb + deviceSerialId;
-            			
+            
+
             commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
             commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
             commands.add(adbAndSerial + " push " + swagInstaller + " /sdcard/");
@@ -244,8 +245,7 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add("dos2unix installAppLock.sh");
             commands.add(adbAndSerial + " push installAppLock.sh /sdcard/");
             commands.add(adbAndSerial + " shell \"cat /sdcard/installAppLock.sh | sh\"");
-            
-            commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
+            commands.add(adbAndSerial + " shell mkdir /sdcard/launcher/");
             commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
             commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
             commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/databases\"");
