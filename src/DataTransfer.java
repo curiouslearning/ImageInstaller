@@ -60,6 +60,7 @@ public class DataTransfer {
             while ((line = rd.readLine()) != null) {
                 sb.append(line);
             }
+            System.out.println("Server Response to label creation: " + sb.toString());
 
         return sb.toString();
         }
