@@ -275,6 +275,53 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
 			return commands;
 			
 		}
+	},
+	MOTOROLAXOOM()
+	{
+		@Override
+		public String getReadableName()
+		{
+			return "Motorola Xoom";
+		}
+		
+		@Override
+		public Boolean getAdbWireless() {return false;}
+		
+		@Override
+		public List<String> getInstallationCommands(String deviceSerialId)
+		{
+			List<String> commands = new LinkedList<String>();
+			
+			String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
+			
+			adb = " adb -s ";
+			idRsaPublic = "id_rsa.pub";
+            idRsaPrivate = "id_rsa";
+            adbAndSerial = adb + deviceSerialId;
+			
+            commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push label.txt /sdcard/");
+            commands.add(adbAndSerial + " push version.txt /sdcard/");
+            commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
+            commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
+            commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            if(new Util().isWindows()) 
+            {
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+            }
+            else
+            {
+            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
+	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
+            }
+            commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
+            
+            return commands;
+		}
 	};
 	
 	public abstract String getReadableName();

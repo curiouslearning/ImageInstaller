@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
 
-Copyright (c) 2014 The Dalai Lama Center
+Copyright (c) 2014 The The Global Literacy Project
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -222,7 +222,6 @@ public class TabletInstallOperatingSystem {
             util.writeToFile(idRsaPrivate, SSHKeys[1]);
             util.writeToFile("tempWpa.txt", TabletConfigDetails.getInstance().swagGetWiressInfo());
             
-            
 //            adb = " adb -s ";
 //            
 //            pushRecoveryScript = adb + deviceSerialId + " push openrecoveryscript /cache/recovery";
@@ -232,8 +231,6 @@ public class TabletInstallOperatingSystem {
 //            
 //            
 //            reboot =  adb + deviceSerialId + " reboot recovery";
-            
-            
             
 //            //Get a list of all commands to run
 //            String[] listOfCommands = readFileIntoArray(new File(CommandFile));
