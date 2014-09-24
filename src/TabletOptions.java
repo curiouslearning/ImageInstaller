@@ -242,14 +242,26 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
 			commands.add(adbAndSerial + " push label.txt /sdcard/");
             commands.add(adbAndSerial + " push version.txt /sdcard/");
-            commands.add("dos2unix installAppLock.sh");
-            commands.add(adbAndSerial + " push installAppLock.sh /sdcard/");
-            commands.add(adbAndSerial + " shell \"cat /sdcard/installAppLock.sh | sh\"");
+            
+            commands.add("~~appLockInstaller~~|" + adbAndSerial);  //For copying appLock config files over under the correct user
+//            commands.add("dos2unix installAppLock.sh");
+//            
+//            commands.add(adbAndSerial + "install com.morrison.applocklite-1.apk");
+//            commands.add(adbAndSerial + "install com.morrison.processmanager.applock-1.apk");
+//            commands.add(adbAndSerial + " push gr_pref.xml /sdcard/");
+//            commands.add(adbAndSerial + " push applock.db /sdcard/");
+//            commands.add(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/");
+//            commands.add(adbAndSerial + " push catdata.sh /sdcard/");
+//            commands.add(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ");
+//    		
+//    		
+//            commands.add(adbAndSerial + " push installAppLock.sh /sdcard/");
+//            commands.add(adbAndSerial + " shell \"cat /sdcard/installAppLock.sh | sh\"");
             commands.add(adbAndSerial + " shell mkdir /sdcard/launcher/");
-            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
-            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
-            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/databases\"");
-            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/shared_prefs\"");
+//            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
+//            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
+//            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/databases\"");
+//            commands.add(adbAndSerial + " shell \"mkdir /data/data/com.morrison.applocklite/shared_prefs\"");
             commands.add(adbAndSerial + " push catdata.sh /sdcard/");
             commands.add(adbAndSerial + " shell pm set-install-location 2");
             commands.add(adbAndSerial + " push tempWpa.txt /sdcard/");
@@ -260,7 +272,7 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
             
             commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
-            commands.add("~~appLockInstaller~~|" + adbAndSerial);  //For copying appLock config files over under the correct user
+            
             
             if(new Util().isWindows()) 
             {

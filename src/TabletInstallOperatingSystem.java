@@ -67,23 +67,7 @@ public class TabletInstallOperatingSystem {
     	
         //Check credentials before doing any processing
         server = new ServerConnect();
-        while(true)
-        {
-            System.out.println("Please enter your username");
-            username = readUserInput();
-            System.out.println("Please Enter your password");
-            password = readUserInput();
-            
-            System.out.println("Checking...");
-            if(!server.checkCredentials(username, password))
-                System.out.println("Your credentials don't match.\nPlease try again.");
-            else
-            {
-            	server.saveCredentials(username, password);
-                System.out.println("Your credentials match!");
-                break;
-            }
-        }
+        getUserCredentials();
 
         int tabletOption;
         while(true)
@@ -264,7 +248,56 @@ public class TabletInstallOperatingSystem {
     
     private static void runAppLockInstaller(String command)
     {
-    	return;
+    		
+    	String adbAndSerial = "adb ";
+    	
+		//push the db files to the tablet
+    	executeCommand(adbAndSerial + "install com.morrison.applocklite-1.apk");
+    	executeCommand(adbAndSerial + "install com.morrison.processmanager.applock-1.apk");
+    	executeCommand(adbAndSerial + " push gr_pref.xml /sdcard/");
+		executeCommand(adbAndSerial + " push applock.db /sdcard/");
+		executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/");
+		executeCommand(adbAndSerial + " push catdata.sh /sdcard/");
+		executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ");
+		
+    	//Get the user info for com.morrison.applocklite
+    	String packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
+    	
+    	String[] resultSet = readCommandResponse(executeCommand(packageListing)).split("\n");
+    	if(resultSet.length < 5)
+    		System.out.println("dataOutput.txt is not present on the tablet or it has not been populated!");
+    	
+    	
+    	boolean isFound = false;
+    	String morrisonString = "";
+    	for(String result : resultSet)
+    	{
+    		if(result.contains("com.morrison.applocklite"))
+    		{
+				morrisonString = result;
+				isFound = true;
+				break;
+    		}
+    	}
+    	
+    	if(!isFound)
+    		System.out.println("The app lockinstaller wasn't found in the listing of apps!");
+    	
+    	System.out.println("morrisonString: " + morrisonString);
+    	String userIdOfMorrison = morrisonString.split(" ")[1];
+
+    	try{
+    	
+    		String content = new Scanner(new File("morrisonInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison).replace("\r", "");
+    		Util util = new Util();
+    		util.writeToFile("morrisonInstallerComplete.sh", content);
+    		executeCommand(adbAndSerial + " push morrisonInstallerComplete.sh /sdcard/");
+    		executeCommand(adbAndSerial + "shell \"cat /sdcard/morrisonInstallerComplete.sh | sh\"");
+    	}
+    	catch(IOException e){System.out.println("Error Reading morrisonInstaller File" + e);}
+
+    	
+    	
 //    	String adbAndSerial = command.split("\\|")[1];
 //    	//Get the user info for com.morrison.applocklite
 //    	String execute = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
@@ -563,6 +596,49 @@ public class TabletInstallOperatingSystem {
     {
     	System.out.println("Waiting to continue... Hit 'Enter' to continue");
     	readUserInput();
+    }
+    
+    private static void getUserCredentials()
+    {
+    	String userCredentialsFile = "userCredentials.txt";
+
+		//check if file exists
+		if(!(new File(userCredentialsFile).exists()))
+		{
+			while(true)
+	        {
+				 System.out.println("Please enter your username");
+		            username = readUserInput();
+		            System.out.println("Please Enter your password");
+		            password = readUserInput();
+		            
+		            System.out.println("Checking...");
+		            if(!server.checkCredentials(username, password))
+		                System.out.println("Your credentials don't match.\nPlease try again.");
+		            else
+		            {
+		            	Util util = new Util();
+		            	server.saveCredentials(username, password);
+		            	String usernameAndPassword = username + "\n" + password;
+		            	util.writeToFile(userCredentialsFile, usernameAndPassword);
+		                System.out.println("Your credentials match!");
+		                break;
+		            }
+	        }
+			return;
+		}
+		else
+		{
+			try (BufferedReader reader = new BufferedReader(new FileReader(userCredentialsFile)))
+		    {
+		        username = reader.readLine();
+		        password = reader.readLine();
+		    }
+		    catch(IOException e1) 
+		    {
+		        System.out.println("Exception: " + e1);
+		    }
+		}
     }
 }
     
