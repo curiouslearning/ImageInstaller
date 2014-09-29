@@ -296,7 +296,6 @@ public class TabletInstallOperatingSystem {
     	try{
     	
     		String content = new Scanner(new File("morrisonInstaller.sh")).useDelimiter("\\Z").next().replace("~~~", userIdOfMorrison).replace("\r", "");
-    		Util util = new Util();
     		util.writeToFile("morrisonInstallerComplete.sh", content);
     		executeCommand(adbAndSerial + " push morrisonInstallerComplete.sh /sdcard/");
     		executeCommand(adbAndSerial + "shell \"cat /sdcard/morrisonInstallerComplete.sh | sh\"");
