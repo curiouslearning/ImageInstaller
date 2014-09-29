@@ -259,14 +259,14 @@ public class TabletInstallOperatingSystem {
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push applock.db /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
-    	if(util.returnOS().equals("Linux"))
+    	if(new Util().isWindows())
     	{
-    		System.out.println("OS is Linux");
-        	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
+    		System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
     	}
     	else
     	{
-        	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
+    		System.out.println("OS is Linux");
+        	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
     	}
 
     	//Get the user info for com.morrison.applocklite
