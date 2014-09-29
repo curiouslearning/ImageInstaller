@@ -1,0 +1,6 @@
+network={
+	ssid="null"
+	psk="null"
+	key_mgmt=WPA-PSK
+	priority=2
+}

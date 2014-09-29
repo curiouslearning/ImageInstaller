@@ -633,6 +633,8 @@ public class TabletInstallOperatingSystem {
 		    {
 		        username = reader.readLine();
 		        password = reader.readLine();
+		        ServerConnect server = new ServerConnect();
+		        server.saveCredentials(username, password);
 		    }
 		    catch(IOException e1) 
 		    {
