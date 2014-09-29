@@ -249,7 +249,7 @@ public class TabletInstallOperatingSystem {
     private static void runAppLockInstaller(String command)
     {
     	Util util = new Util();
-    		
+    	String packageListing;
     	String adbAndSerial = "adb ";
     	
 		//push the db files to the tablet
@@ -259,19 +259,24 @@ public class TabletInstallOperatingSystem {
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push applock.db /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
+    	   	
     	if(new Util().isWindows())
     	{
-    		System.out.println("OS is Windows");
     		System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
+    		
+        	//Get the user info for com.morrison.applocklite
+    		packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
     	}
     	else
     	{
-    		System.out.println("OS is Linux");
         	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
+        	
+        	//Get the user info for com.morrison.applocklite
+        	packageListing = adbAndSerial + " shell cat /sdcard/dataOutput.txt";
     	}
 
-    	//Get the user info for com.morrison.applocklite
-    	String packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
+
+    	
     	
     	String[] resultSet = readCommandResponse(executeCommand(packageListing)).split("\n");
     	if(resultSet.length < 5)
