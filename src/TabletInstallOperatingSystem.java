@@ -252,13 +252,13 @@ public class TabletInstallOperatingSystem {
     	String adbAndSerial = "adb ";
     	
 		//push the db files to the tablet
-    	executeCommand(adbAndSerial + "install com.morrison.applocklite-1.apk");
-    	executeCommand(adbAndSerial + "install com.morrison.processmanager.applock-1.apk");
-    	executeCommand(adbAndSerial + " push gr_pref.xml /sdcard/");
-		executeCommand(adbAndSerial + " push applock.db /sdcard/");
-		executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/");
-		executeCommand(adbAndSerial + " push catdata.sh /sdcard/");
-		executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ");
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " install com.morrison.applocklite-1.apk")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " install com.morrison.processmanager.applock-1.apk")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push gr_pref.xml /sdcard/")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push applock.db /sdcard/")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
 		
     	//Get the user info for com.morrison.applocklite
     	String packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
@@ -266,7 +266,6 @@ public class TabletInstallOperatingSystem {
     	String[] resultSet = readCommandResponse(executeCommand(packageListing)).split("\n");
     	if(resultSet.length < 5)
     		System.out.println("dataOutput.txt is not present on the tablet or it has not been populated!");
-    	
     	
     	boolean isFound = false;
     	String morrisonString = "";
