@@ -259,7 +259,7 @@ public class TabletInstallOperatingSystem {
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
-		
+    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
     	//Get the user info for com.morrison.applocklite
     	String packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
     	
