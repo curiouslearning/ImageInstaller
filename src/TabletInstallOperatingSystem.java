@@ -248,6 +248,7 @@ public class TabletInstallOperatingSystem {
     
     private static void runAppLockInstaller(String command)
     {
+    	Util util = new Util();
     		
     	String adbAndSerial = "adb ";
     	
@@ -258,8 +259,15 @@ public class TabletInstallOperatingSystem {
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push applock.db /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push com.morrison.applocklite_preferences.xml /sdcard/")));
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
-    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
-    	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
+    	if(util.returnOS().equals("Linix"))
+    	{
+        	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell cat /sdcard/catdata.sh | sh  ")));
+    	}
+    	else
+    	{
+        	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
+    	}
+
     	//Get the user info for com.morrison.applocklite
     	String packageListing = adbAndSerial + " shell \"cat /sdcard/dataOutput.txt\"";
     	

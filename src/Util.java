@@ -40,7 +40,7 @@ public class Util {
 	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 	
-	private String returnOS(){
+	public String returnOS(){
 
 	    String currentOs = System.getProperty("os.name").toUpperCase();
 	    if( currentOs.contains(MAC_OS)){
