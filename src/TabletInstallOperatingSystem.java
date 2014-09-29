@@ -261,6 +261,7 @@ public class TabletInstallOperatingSystem {
     	System.out.println(readCommandResponse(executeCommand(adbAndSerial + " push catdata.sh /sdcard/")));
     	if(new Util().isWindows())
     	{
+    		System.out.println("OS is Windows");
     		System.out.println(readCommandResponse(executeCommand(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh \" ")));
     	}
     	else
