@@ -119,7 +119,7 @@ public enum TabletOptions {
             	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
 	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
             }
-            commands.add(adbAndSerial + " shell reboot recovery");
+            //commands.add(adbAndSerial + " shell reboot recovery");
             //commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
             
             return commands;
@@ -156,8 +156,8 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
             commands.add(adbAndSerial + " push RoanokeInstaller.sh /sdcard/");
             commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
-            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
-            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
+//            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
+//            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
             commands.add(adbAndSerial + " push catdata.sh /sdcard/");
             commands.add(adbAndSerial + " push simpleRecoveryScript.sh /sdcard/");
             commands.add(adbAndSerial + " shell \"cat /sdcard/simpleRecoveryScript.sh | sh\"");
@@ -169,9 +169,9 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             
             commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
             //Applock instructions
-            commands.add("~~appLockInstaller~~|" + adbAndSerial);
-            //Condi app?
-            commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
+//            commands.add("~~appLockInstaller~~|" + adbAndSerial);
+//            //Condi app?
+//            commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
 
             if(new Util().isWindows()) 
             {
@@ -311,6 +311,7 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             idRsaPrivate = "id_rsa";
             adbAndSerial = adb + deviceSerialId;
 			
+            commands.add(adbAndSerial + " shell rm -r /sdcard/Movies");
             commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
             commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
             commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
@@ -318,19 +319,21 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push version.txt /sdcard/");
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
             commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
-            commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
-            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            
             if(new Util().isWindows()) 
             {
+            	commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
 	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
 	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
             }
             else
             {
+            	commands.add(adbAndSerial + " shell mkdir /sdcard/launcher/ ");
             	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
 	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
             }
-            commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  MUST BOOT INTO RECOVERY MANUALLY 
             
             return commands;
 		}
