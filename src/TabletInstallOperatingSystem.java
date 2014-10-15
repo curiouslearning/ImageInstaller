@@ -647,6 +647,8 @@ public class TabletInstallOperatingSystem {
 		        username = reader.readLine();
 		        password = reader.readLine();
 		        ServerConnect server = new ServerConnect();
+		        if(!server.checkCredentials(username, password))
+	                System.out.println("Your credentials don't match.\nRemove userCredentials.txt");
 		        server.saveCredentials(username, password);
 		    }
 		    catch(IOException e1) 

@@ -1,5 +1,5 @@
 print "Restoring..."
-restore /external_sd/tabimage
+restore /sdcard/tabimage
 
 print "Customizing..."
 --
