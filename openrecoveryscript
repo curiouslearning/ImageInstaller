@@ -1,8 +1,8 @@
 print "Restoring..."
-restore /sdcard/tabimage
+restore /external_sd/tabimage
 
 print "Customizing..."
-cmd echo -e "GSU-11" > /sdcard/label.txt
+cmd echo -e "UnixTest-9" > /sdcard/label.txt
 print "Setting up wirless"
 cmd echo -e 'network={\n\tssid="null"\n\tpsk="null"\n\tkey_mgmt=WPA-PSK\n\tpriority=2\n}' >> /data/misc/wifi/wpa_supplicant.conf
 cmd echo -e "1.0.0_tab3lite" > /sdcard/version.txt

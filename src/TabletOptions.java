@@ -139,9 +139,11 @@ public enum TabletOptions {
 		@Override
 		public List<String> getInstallationCommands(String deviceSerialId)
 		{
-			List<String> commands = new LinkedList<String>();
 			
-String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
+			
+		List<String> commands = new LinkedList<String>();
+			
+			String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
 			
 			adb = " adb -s ";
 			idRsaPublic = "id_rsa.pub";
@@ -154,38 +156,84 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
             commands.add(adbAndSerial + " push label.txt /sdcard/");
             commands.add(adbAndSerial + " push version.txt /sdcard/");
             commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
-            commands.add(adbAndSerial + " push RoanokeInstaller.sh /sdcard/");
-            commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
-//            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
-//            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
-            commands.add(adbAndSerial + " push catdata.sh /sdcard/");
-            commands.add(adbAndSerial + " push simpleRecoveryScript.sh /sdcard/");
-            commands.add(adbAndSerial + " shell \"cat /sdcard/simpleRecoveryScript.sh | sh\"");
-            
-            if(new Util().isWindows()) 
-            	commands.add(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh\"");
+            commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
+            if(new Util().isWindows())
+            {
+                commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
+                commands.add(adbAndSerial + " shell \" rm -r /sdcard/Movies\"");
+            }
             else
-            	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
-            
-            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
-            //Applock instructions
-//            commands.add("~~appLockInstaller~~|" + adbAndSerial);
-//            //Condi app?
-//            commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
+            {
+                commands.add(adbAndSerial + " shell mkdir /sdcard/launcher/");
+                commands.add(adbAndSerial + " shell rm -r /sdcard/Movies");
+            }
 
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            
             if(new Util().isWindows()) 
             {
-	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash\" ");
-	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh\"");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
             }
             else
             {
-            	commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash \" ");
-	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh \" ");	
+            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
+	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
             }
-            //commands.add(adbAndSerial + " reboot recovery");
+            //commands.add(adbAndSerial + " shell reboot recovery");
+            //commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
+            
+            return commands;
 			
-			return commands;
+			
+			
+//			List<String> commands = new LinkedList<String>();
+//			
+//			String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
+//			
+//			adb = " adb -s ";
+//			idRsaPublic = "id_rsa.pub";
+//            idRsaPrivate = "id_rsa";
+//            adbAndSerial = adb + deviceSerialId;
+//			
+//            commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
+//            commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
+//            commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
+//            commands.add(adbAndSerial + " push label.txt /sdcard/");
+//            commands.add(adbAndSerial + " push version.txt /sdcard/");
+//            commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
+//            commands.add(adbAndSerial + " push RoanokeInstaller.sh /sdcard/");
+//            commands.add(adbAndSerial + " shell \"mkdir /sdcard/launcher\"");
+////            commands.add(adbAndSerial + " install com.morrison.applocklite-1.apk");
+////            commands.add(adbAndSerial + " install com.morrison.processmanager.applock-1.apk");
+//            commands.add(adbAndSerial + " push catdata.sh /sdcard/");
+//            commands.add(adbAndSerial + " push simpleRecoveryScript.sh /sdcard/");
+//            commands.add(adbAndSerial + " shell \"cat /sdcard/simpleRecoveryScript.sh | sh\"");
+//            
+//            if(new Util().isWindows()) 
+//            	commands.add(adbAndSerial + " shell \"cat /sdcard/catdata.sh | sh\"");
+//            else
+//            	commands.add(adbAndSerial + " shell cat /sdcard/catdata.sh | sh");
+//            
+//            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+//            //Applock instructions
+////            commands.add("~~appLockInstaller~~|" + adbAndSerial);
+////            //Condi app?
+////            commands.add("~~OtherSpecialInstaller~~|" + adbAndSerial);
+//
+//            if(new Util().isWindows()) 
+//            {
+//	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash\" ");
+//	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh\"");
+//            }
+//            else
+//            {
+//            	commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | bash \" ");
+//	            commands.add(adbAndSerial + " shell \"busybox nohup cat /sdcard/RoanokeInstaller.sh | sh \" ");	
+//            }
+//            //commands.add(adbAndSerial + " reboot recovery");
+			
+//			return commands;
 		}
 	},
 	SAMSUNGTAB3LITET111()
@@ -193,7 +241,7 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
 		@Override
 		public String getReadableName()
 		{
-			return "Samsung Tab 3 Lite, with cellular capabilities T111";
+			return "Samsung Tab 3 Lite Neo, with cellular capabilities T111";
 		}
 		
 		@Override
@@ -203,10 +251,48 @@ String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
 		public List<String> getInstallationCommands(String deviceSerialId)
 		{
 			List<String> commands = new LinkedList<String>();
-
-			//TODO fill in logic
 			
-			return commands;
+			String idRsaPublic, idRsaPrivate, adb, adbAndSerial;
+			
+			adb = " adb -s ";
+			idRsaPublic = "id_rsa.pub";
+            idRsaPrivate = "id_rsa";
+            adbAndSerial = adb + deviceSerialId;
+			
+            commands.add(adbAndSerial + " shell mkdir /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPrivate + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push " + idRsaPublic + " /sdcard/.ssh/");
+            commands.add(adbAndSerial + " push label.txt /sdcard/");
+            commands.add(adbAndSerial + " push version.txt /sdcard/");
+            commands.add(adbAndSerial + " push openrecoveryscript /sdcard/");
+            commands.add(adbAndSerial + " push recoveryinstaller.sh /sdcard/");
+            if(new Util().isWindows())
+            {
+                commands.add(adbAndSerial + " shell \" mkdir /sdcard/launcher/\"");
+                commands.add(adbAndSerial + " shell \" rm -r /sdcard/Movies\"");
+            }
+            else
+            {
+                commands.add(adbAndSerial + " shell mkdir /sdcard/launcher/");
+                commands.add(adbAndSerial + " shell rm -r /sdcard/Movies");
+            }
+
+            commands.add(adbAndSerial + " push apps.json /sdcard/launcher/");
+            
+            if(new Util().isWindows()) 
+            {
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | bash\" ");
+	            commands.add(adbAndSerial + " shell \"cat /sdcard/recoveryinstaller.sh | sh\"");
+            }
+            else
+            {
+            	commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | bash ");
+	            commands.add(adbAndSerial + " shell cat /sdcard/recoveryinstaller.sh | sh ");	
+            }
+            //commands.add(adbAndSerial + " shell reboot recovery");
+            //commands.add(adbAndSerial + " reboot recovery");  //FOR TAB 3 LITE THIS WILL BOOTLOOP.  BOOT INTO RECOVERY MANUALLY 
+            
+            return commands;
 		}
 	},
 	SWAG101ANDROID411()

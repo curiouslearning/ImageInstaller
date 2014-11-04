@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -481,15 +482,49 @@ public class TabletInstallOperatingSystem {
 		return ipAddresses;
     }
     
+    //TODO Test this method!
     private static String readSerialId(int deviceNumber)
     {
+    	String deviceSerialId;
+    	
+    	//If Swag tablet, create a serial number, write it to the tablet and push that to the database
+    	if(TabletConfigDetails.getInstance().getTabletOption().getAdbWireless())
+    	{
+    		deviceSerialId = devices.get(deviceNumber).split("\t")[0] + " ";
+	    	
+    		//Check if there is an existing serial number
+			String readSerialNumber = "";
+			if(new Util().isWindows())
+				readSerialNumber = " \"cat /sdcard/launcher/serialNumber\"";
+	    	else
+	    		readSerialNumber = " cat /sdcard/launcher/serialNumber";
+			
+			String tempSerialNumber;
+			if(!(tempSerialNumber = readCommandResponse(executeCommand("adb -s " + deviceSerialId + " shell " + readSerialNumber)))
+					.toLowerCase().contains("no such file"))
+			{
+				deviceSerialId = tempSerialNumber;
+			}
+			else 
+			{
+	    		//Hack for SWAG Tablets to override serial Number	
+				Long newSerialNumber = new java.sql.Timestamp(new java.util.Date().getTime()).getTime();
+				readCommandResponse(executeCommand("adb -s " + deviceSerialId + "shell mkdir /sdcard/launcher"));
+				readCommandResponse(executeCommand("adb -s " + deviceSerialId + "echo " + newSerialNumber + " > /sdcard/launcher/serialNumber"));
+				
+				//Generate a 5 digit random number to ensure that there are no duplicate serial id's
+				Long fiveDigitRandomNumber = Math.round(((Math.random()+0.00001) * 100000));
+				
+				deviceSerialId = newSerialNumber.toString() + fiveDigitRandomNumber.toString();
+			}
+			int i = 0;
+    	}
+
     	String getSerialId;
     	if(new Util().isWindows())
     		getSerialId = " shell \"cat /sys/class/android_usb/android0/iSerial\"";
     	else
     		getSerialId = " shell cat /sys/class/android_usb/android0/iSerial";
-    	
-    	String deviceSerialId;
     	
     	if(!TabletConfigDetails.getInstance().getTabletOption().getAdbWireless())
     	{
@@ -498,6 +533,8 @@ public class TabletInstallOperatingSystem {
     		{
     			System.out.println("The devices is wireless but it is not configured this way!\n"
     					+ "Trying to resolve Serial Number over wireless network...");
+
+    			//Old way of reading serial number before getting it from file
     			deviceSerialId = readCommandResponse(executeCommand("adb -s " + deviceSerialId + getSerialId)).trim();
     			
     			System.out.println("The Serial Number that was resolved is: " + deviceSerialId);
@@ -620,23 +657,23 @@ public class TabletInstallOperatingSystem {
 		{
 			while(true)
 	        {
-				 System.out.println("Please enter your username");
-		            username = readUserInput();
-		            System.out.println("Please Enter your password");
-		            password = readUserInput();
-		            
-		            System.out.println("Checking...");
-		            if(!server.checkCredentials(username, password))
-		                System.out.println("Your credentials don't match.\nPlease try again.");
-		            else
-		            {
-		            	Util util = new Util();
-		            	server.saveCredentials(username, password);
-		            	String usernameAndPassword = username + "\n" + password;
-		            	util.writeToFile(userCredentialsFile, usernameAndPassword);
-		                System.out.println("Your credentials match!");
-		                break;
-		            }
+				System.out.println("Please enter your username");
+	            username = readUserInput();
+	            System.out.println("Please Enter your password");
+	            password = readUserInput();
+	            
+	            System.out.println("Checking...");
+	            if(!server.checkCredentials(username, password))
+	                System.out.println("Your credentials don't match.\nPlease try again.");
+	            else
+	            {
+	            	Util util = new Util();
+	            	server.saveCredentials(username, password);
+	            	String usernameAndPassword = username + "\n" + password;
+	            	util.writeToFile(userCredentialsFile, usernameAndPassword);
+	                System.out.println("Your credentials match!");
+	                break;
+	            }
 	        }
 			return;
 		}
