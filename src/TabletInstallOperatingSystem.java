@@ -45,8 +45,7 @@ public class TabletInstallOperatingSystem {
     private static String[] commandsToIgnore = {"busybox nohup"};
         
     public static void main(String[] args) {
-    	
-    	
+
     	Util util = new Util();
     	
     	//restart the server
@@ -516,8 +515,8 @@ public class TabletInstallOperatingSystem {
 				Long fiveDigitRandomNumber = Math.round(((Math.random()+0.00001) * 100000));
 				
 				deviceSerialId = newSerialNumber.toString() + fiveDigitRandomNumber.toString();
+				return deviceSerialId;
 			}
-			int i = 0;
     	}
 
     	String getSerialId;
